@@ -2,18 +2,16 @@ const express = require('express');
 const router = express.Router()
 
 
-const userController = require('../../controllers/user.controller');
+const userController = require("../../controllers/user.controller");
 
+router.route("/")
+    .get(userController.getAllUser)
+    .post(userController.createUser)
 
-router
-    .route("/")
-    .get(userController.getAllUsers)
-    .post()
+router.route("/status")
+    .post(userController.status)
 
-router
-    .route("/:id")
-    .get(userController.getSingleUser)
-    .post()
-
+router.route("/category")
+    .post(userController.category)
 
 module.exports = router  

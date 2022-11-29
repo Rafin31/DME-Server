@@ -8,12 +8,9 @@ const userRoutes = require('./routes/v1/user.route')
 //routes
 app.use('/api/v1/users', userRoutes) //  user route 
 
-/*
- add your routes here
-*/
 
 
-//no route found
+
 app.all("*", (req, res) => {
     res.status(404).send({ success: "false", message: "No API end point found" });
 });
@@ -25,12 +22,9 @@ app.listen(port, () => {
 //handling global errors
 app.use(errorHandler)
 
+
 //can handel "unhandledRejection" bellow like this.
 process.on("unhandledRejection", (error) => {
-    console.log("unhandledRejection", error.name, error.message);
-    return res.status(error.status || 500).json({ success: "false", message: "Internal Server Error" })
-    // app.close(() => {
-    //     process.exit(1);
-    // });
+    console.log("unhandledRejection".inverse.red, error.name, error.message);
 });
 

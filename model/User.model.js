@@ -1,0 +1,92 @@
+const mongoose = require('mongoose');
+const validator = require('validator');
+const { ObjectId } = mongoose.Schema.Types;
+
+const userSchema = mongoose.Schema({
+
+    firstName: {
+        type: String,
+        trim: true,
+        required: [true, "First Name is required"]
+    },
+    lastName: {
+        type: String,
+        trim: true,
+        required: [true, "Last Name is required"]
+    },
+    fullName: {
+        type: String,
+        trim: true,
+        required: [true, "Full Name is required"]
+    },
+    email: {
+        type: String,
+        trim: true,
+        required: [true, "Email is required"],
+        validate: [validator.isEmail, "Provide a valid Email address"],
+        lowercase: true,
+        validate: {
+            validator: function (value) {
+                return this.model('User').findOne({ email: value }).then(user => !user)
+            },
+            message: props => `${props.value} is already used by another user`
+        },
+    },
+    userImage: {
+        type: String,
+        trim: true,
+    },
+    password: {
+        type: String,
+        trim: true,
+        required: [true, "Password is required"],
+        validate: {
+            validator: (value) =>
+                validator.isStrongPassword(value, {
+                    minLength: 8,
+                    minLowercase: 1,
+                    minNumber: 1,
+                    minUppercase: 1,
+                    minSymbol: 1,
+                }),
+            message: "Password is not strong enough"
+        },
+    },
+    confirmPassword: {
+        type: String,
+        trim: true,
+        required: [true, "Please Confirm Your Password! "],
+        validate: {
+            validator: function (value) {
+                return value === this.password;
+            },
+            message: "Confirm Password did not matched!"
+        }
+    },
+    userCategory: {
+        type: ObjectId,
+        ref: "UserCategory",
+        required: [true, "User Category is required"]
+    },
+    status: {
+        type: ObjectId,
+        ref: "UserStatus",
+        required: [true, "User Status is required"]
+    },
+    token: String,
+    expireToken: Date,
+},
+    { timestamps: true }
+)
+
+//Hashing Password and remove confirm password
+userSchema.pre('save', function (next) {
+    //hash password will be here
+    this.confirmPassword = undefined;
+    next();
+})
+
+
+const User = mongoose.model("User", userSchema);
+
+module.exports = User;
