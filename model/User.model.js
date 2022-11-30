@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
 const { ObjectId } = mongoose.Schema.Types;
 
 const userSchema = mongoose.Schema({
@@ -82,8 +83,14 @@ const userSchema = mongoose.Schema({
 //Hashing Password and remove confirm password
 userSchema.pre('save', function (next) {
     //hash password will be here
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(this.password, salt);
+    this.password = hashedPassword;
     this.confirmPassword = undefined;
     next();
+
+    // compare password
+    // bcrypt.compareSync("B4c0/\/", hash); // true
 })
 
 
