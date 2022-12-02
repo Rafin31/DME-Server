@@ -56,7 +56,6 @@ const userSchema = mongoose.Schema({
     confirmPassword: {
         type: String,
         trim: true,
-        required: [true, "Please Confirm Your Password! "],
         validate: {
             validator: function (value) {
                 return value === this.password;
@@ -82,13 +81,34 @@ const userSchema = mongoose.Schema({
 
 //Hashing Password and remove confirm password
 userSchema.pre('save', function (next) {
-    //hash password will be here
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(this.password, salt);
     this.password = hashedPassword;
     this.confirmPassword = undefined;
     next();
 })
+
+
+userSchema.pre('insertMany', function (next, docs) {
+    try {
+        const salt = bcrypt.genSaltSync(10);
+        docs.map(data => {
+            const hashedPassword = bcrypt.hashSync(data.password, salt);
+            data.password = hashedPassword;
+            data.confirmPassword = undefined;
+
+        })
+        console.log(docs)
+        return next();
+
+    } catch (error) {
+        return next(error);
+    }
+
+
+})
+
+
 
 userSchema.methods.comparePassword = function (password, hash) {
     const isPasswordValid = bcrypt.compareSync(password, hash);

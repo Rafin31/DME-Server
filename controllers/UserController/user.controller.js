@@ -1,10 +1,14 @@
 const User = require("../../model/User.model")
 const service = require("../../services/UserServices/user.services")
 const { generateToken } = require("../../utils/generateToken")
+const fs = require('fs');
+const excelToJson = require('convert-excel-to-json');
+const path = require('path');
 
-exports.getAllUser = async (req, res) => {
+
+exports.getAllUserService = async (req, res) => {
     try {
-        const users = await service.getAllUser()
+        const users = await service.getAllUserService()
         res.status(200).json({
             status: "Success",
             data: users
@@ -50,14 +54,51 @@ exports.updateUser = async (req, res) => {
 
 exports.importPatient = async (req, res) => {
     try {
+        const excelData = excelToJson({
+            sourceFile: `./public/documents/uploads/patient/${req.file.filename}`,
+            header: {
+                rows: 1
+            },
+            columnToKey: {
+                A: 'firstName',
+                B: 'lastName',
+                C: 'fullName',
+                D: 'email',
+                E: 'password',
+                F: 'userCategory',
+                G: 'gender',
+                H: 'dob',
+                I: 'age',
+                J: 'weight',
+                K: 'country',
+                L: 'city',
+                M: 'state',
+                N: 'address',
+                O: 'primaryInsurance',
+                P: "secondaryInsurance",
+            }
+        });
+
+        const patientData = excelData.Sheet1.map((data) => ({
+            ...data,
+            userCategory: "63861b794e45673948bb7c9f", //Category Patient ID
+            status: "63861954b3b3ded1ee267309" //Status Active ID
+
+        }));
+
+
+        const patients = await service.importPatientService(patientData)
+
         res.status(200).json({
             status: "success",
-            data: req.file
+            data: patients
         })
     } catch (error) {
+        console.log(error);
         res.status(400).json({
             status: "failed",
-            message: "File type should be .xlsx and below 5 mb"
+            message: error?.message
+            // message: error?.message?.split('User validation failed:')[1]
         })
     }
 }
@@ -73,7 +114,7 @@ exports.loginUser = async (req, res) => {
             })
         }
 
-        const user = await service.findUserByEmail(email)
+        const user = await service.findUserByEmailService(email)
 
         if (!user) {
             return res.status(401).json({
@@ -92,7 +133,7 @@ exports.loginUser = async (req, res) => {
             })
         }
 
-        const userStatus = await service.findUserStatus(email);
+        const userStatus = await service.findUserStatusService(email);
 
         if (userStatus !== "Active") {
             return res.status(403).json({
@@ -101,7 +142,7 @@ exports.loginUser = async (req, res) => {
             })
         }
 
-        const userCategory = await service.findUserCategory(email);
+        const userCategory = await service.findUserCategoryService(email);
 
         const token = generateToken({ email: email, categoryId: userCategory._id, status: userStatus })
 
@@ -127,7 +168,7 @@ exports.loginUser = async (req, res) => {
 }
 exports.status = async (req, res) => {
     try {
-        const status = await service.createStatus(req.body)
+        const status = await service.createStatusService(req.body)
         res.status(200).json({
             status: "Success",
             data: status
@@ -141,7 +182,7 @@ exports.status = async (req, res) => {
 }
 exports.category = async (req, res) => {
     try {
-        const category = await service.createCategory(req.body)
+        const category = await service.createCategoryService(req.body)
         res.status(200).json({
             status: "Success",
             data: category

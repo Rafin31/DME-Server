@@ -7,12 +7,12 @@ const DME_Supplier = require('../../model/DmeSupplier.model');
 
 // https://www.ultimateakash.com/blog-details/IiwzQGAKYAo=/How-to-implement-Transactions-in-Mongoose-&-Node.Js-(Express)
 
-const findUserCategory = async (id) => {
+const findUserCategoryService = async (id) => {
     const category = await UserCategory.findById(id).select("-_id category");
     return category;
 }
 
-exports.getAllUser = async () => {
+exports.getAllUserService = async () => {
     const user = await User.find({})
         .lean()
         .populate({ path: 'status', select: '-_id -updatedAt -createdAt -__v' })
@@ -94,29 +94,54 @@ exports.updateUserService = async (id, data) => {
     }
 }
 
-exports.findUserByEmail = async (email) => {
+exports.findUserByEmailService = async (email) => {
     const user = await User.findOne({ email })
     return user;
 }
 
-exports.findUserStatus = async (email) => {
+exports.findUserStatusService = async (email) => {
     const user = await User.findOne({ email })
     const userStatus = await UserStatus.findById(user?.status).select("-_id status")
     return userStatus.status;
 }
 
-exports.findUserCategory = async (email) => {
+exports.findUserCategoryService = async (email) => {
     const user = await User.findOne({ email })
     const userCategory = await UserCategory.findById(user?.userCategory)
     return userCategory;
 }
 
-exports.createStatus = async (data) => {
+exports.importPatientService = async (data) => {
+
+    const session = await db.startSession();
+    try {
+        session.startTransaction();
+        const users = await User.insertMany(data, { session }) //will insert value which are correct
+
+        const patientData = data.map((patient, index) => (
+            {
+                ...patient,
+                userId: users[index]._id
+            }
+        ))
+        await Patient.insertMany(patientData, { session }) //will insert value which are correct
+        await session.commitTransaction();
+        return users
+
+    } catch (error) {
+        await session.abortTransaction();
+        throw error
+    } finally {
+        session.endSession();
+    }
+}
+
+exports.createStatusService = async (data) => {
     const status = await UserStatus.create(data)
     return status;
 }
 
-exports.createCategory = async (data) => {
+exports.createCategoryService = async (data) => {
     const category = await UserCategory.create(data)
     return category;
 }

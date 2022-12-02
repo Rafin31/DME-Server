@@ -2,7 +2,6 @@ const app = require("./app");
 const errorHandler = require("./middlewares/errorHandler");
 const port = process.env.PORT || 5000;
 
-
 const userRoutes = require('./routes/v1/user.route')
 
 //routes

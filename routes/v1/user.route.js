@@ -6,7 +6,7 @@ const uploadDocument = require('../../middlewares/importDocument')
 //api/v1/users
 
 router.route("/")
-    .get(userController.getAllUser)
+    .get(userController.getAllUserService)
     .post(userController.createUser)
 
 
