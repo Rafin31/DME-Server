@@ -56,8 +56,8 @@ exports.importPatient = async (req, res) => {
         })
     } catch (error) {
         res.status(400).json({
-            status: "fail",
-            message: error
+            status: "failed",
+            message: "File type should be .xlsx and below 5 mb"
         })
     }
 }

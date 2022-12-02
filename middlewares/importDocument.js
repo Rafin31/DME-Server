@@ -19,12 +19,12 @@ const uploadDocument = (folderName) => {
             if (supportedFile.test(fileExtension)) {
                 cb(null, true)
             } else {
-                cb(new Error("Must be a .xlsx type file"))
+                cb("Must be a .xlsx type file", false)
             }
         },
         limits: {
             fileSize: 5000000
-        }
+        },
     })
 
     return uploader
