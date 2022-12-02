@@ -10,9 +10,23 @@ const path = require('path');
 exports.getAllUserService = async (req, res) => {
     try {
         const users = await service.getAllUserService()
+
+        const exceptCategory = users.map(({ userCategory, ...other }) => other)
+        const category = users.map(({ userCategory, ...other }) => userCategory)
+        const status = users.map(({ status, ...other }) => status)
+
+        const userDataPlain = exceptCategory.map((user, index) => ({
+            ...user,
+            category: category[index].category,
+            permission: category[index].permission,
+            status: status[index].status
+        }))
+
+
+
         res.status(200).json({
             status: "Success",
-            data: users
+            data: userDataPlain
         })
     } catch (error) {
         res.status(400).json({
@@ -21,6 +35,7 @@ exports.getAllUserService = async (req, res) => {
         })
     }
 }
+
 exports.createUser = async (req, res) => {
     try {
         const user = await service.createUserService(req.body)
@@ -187,11 +202,16 @@ exports.loginUser = async (req, res) => {
         const { category, permission } = userCategory.toObject()
         const { password: pwd, status, userCategory: ucg, updatedAt, createdAt, __v, ...others } = user.toObject()
 
+        const userPlainData = {
+            ...others,
+            category: category,
+            permission: permission,
+            token: token,
+        }
+
         res.status(200).json({
             status: "Success",
-            data: others,
-            category: { category, permission },
-            token: token,
+            data: userPlainData,
         })
 
 
