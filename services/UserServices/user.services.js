@@ -7,11 +7,6 @@ const DME_Supplier = require('../../model/DmeSupplier.model');
 
 // https://www.ultimateakash.com/blog-details/IiwzQGAKYAo=/How-to-implement-Transactions-in-Mongoose-&-Node.Js-(Express)
 
-const findUserCategoryService = async (id) => {
-    const category = await UserCategory.findById(id).select("-_id category");
-    return category;
-}
-
 exports.getAllUserService = async () => {
     const user = await User.find({})
         .lean()
@@ -83,6 +78,9 @@ exports.updateUserService = async (id, data) => {
         if (userCategory.category === "DME-Supplier") {
             await DME_Supplier.updateOne({ userId: user._id }, { $set: data }, { runValidators: true }).session(session)
         }
+        if (userCategory.category === "Patient") {
+            await Patient.updateOne({ userId: user._id }, { $set: data }, { runValidators: true }).session(session)
+        }
 
         await session.commitTransaction();
         return updateUser;
@@ -134,6 +132,15 @@ exports.importPatientService = async (data) => {
     } finally {
         session.endSession();
     }
+}
+
+exports.getAllPatientService = async () => {
+    const patients = await Patient.find({})
+        .lean()
+        .populate({ path: "userId", select: '-_id -updatedAt -createdAt -status -userCategory -password -__v' })
+        .select('-updatedAt -createdAt -__v -_id')
+
+    return patients
 }
 
 exports.createStatusService = async (data) => {

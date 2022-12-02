@@ -98,7 +98,6 @@ userSchema.pre('insertMany', function (next, docs) {
             data.confirmPassword = undefined;
 
         })
-        console.log(docs)
         return next();
 
     } catch (error) {

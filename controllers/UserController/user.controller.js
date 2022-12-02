@@ -2,6 +2,7 @@ const User = require("../../model/User.model")
 const service = require("../../services/UserServices/user.services")
 const { generateToken } = require("../../utils/generateToken")
 const fs = require('fs');
+const XLSX = require('xlsx');
 const excelToJson = require('convert-excel-to-json');
 const path = require('path');
 
@@ -76,6 +77,7 @@ exports.importPatient = async (req, res) => {
                 N: 'address',
                 O: 'primaryInsurance',
                 P: "secondaryInsurance",
+                Q: "phoneNumber",
             }
         });
 
@@ -101,6 +103,42 @@ exports.importPatient = async (req, res) => {
             // message: error?.message?.split('User validation failed:')[1]
         })
     }
+}
+
+exports.exportPatient = async (req, res) => {
+    try {
+        const patients = await service.getAllPatientService();
+
+        const exceptUserID = patients.map(({ userId, ...other }) => other)
+        const userID = patients.map(({ userId, ...other }) => userId)
+
+        const patientDataPlain = exceptUserID.map((user, index) => ({
+            firstName: userID[index].firstName,
+            lastName: userID[index].lastName,
+            fullName: userID[index].fullName,
+            email: userID[index].email,
+            ...user
+        }))
+
+        const wb = XLSX.utils.book_new()
+        let temp = JSON.stringify(patientDataPlain);
+        temp = JSON.parse(temp);
+        const ws = XLSX.utils.json_to_sheet(temp);
+        const down = './public/documents/uploads/patient/export-patient.xlsx'
+        XLSX.utils.book_append_sheet(wb, ws, "sheet1");
+        XLSX.writeFile(wb, down);
+
+
+        res.download("./public/documents/uploads/patient/export-patient.xlsx")
+
+    } catch (error) {
+        console.log(error)
+        res.status(200).json({
+            status: "fail",
+            data: error
+        })
+    }
+
 }
 
 exports.loginUser = async (req, res) => {
