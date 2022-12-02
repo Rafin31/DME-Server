@@ -17,6 +17,7 @@ exports.getAllUser = async () => {
         .lean()
         .populate({ path: 'status', select: '-_id -updatedAt -createdAt -__v' })
         .populate({ path: 'userCategory', select: '-_id -updatedAt -createdAt -__v' })
+        .select('-updatedAt -createdAt -__v')
     return user;
 }
 
@@ -59,8 +60,6 @@ exports.createUserService = async (data) => {
             }
             await Patient.create([patientData], { session })
         }
-
-
         await session.commitTransaction();
         return createdUser
 

@@ -48,6 +48,20 @@ exports.updateUser = async (req, res) => {
     }
 }
 
+exports.importPatient = async (req, res) => {
+    try {
+        res.status(200).json({
+            status: "success",
+            data: req.file
+        })
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: error
+        })
+    }
+}
+
 exports.loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;

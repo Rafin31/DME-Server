@@ -13,7 +13,10 @@ const patientSchema = mongoose.Schema({
         type: String,
         trim: true,
         required: [true, "Gender is required"],
-        enum: ["Male", "Female", "Other"]
+        enum: {
+            values: ["Male", "Female", "Other"],
+            message: "{VALUE} is not a gender"
+        }
     },
     dob: {
         type: String,
@@ -47,11 +50,13 @@ const patientSchema = mongoose.Schema({
     },
     primaryInsurance: {
         type: Number,
+        min: [10, 'Primary Insurance must be at least 10 digit'],
         trim: true,
         required: [true, "Primary Insurance is required"]
     },
     secondaryInsurance: {
         type: Number,
+        min: [10, 'Secondary Insurance must be at least 10 digit'],
         trim: true,
         required: [true, "Secondary Insurance is required"]
     },
