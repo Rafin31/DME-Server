@@ -2,8 +2,9 @@ const User = require('../../model/User.model');
 const UserStatus = require('../../model/UserStatus.model');
 const UserCategory = require('../../model/UserCategory.model');
 const Patient = require('../../model/Patient.model');
-const { db } = require('../../model/User.model');
 const DME_Supplier = require('../../model/DmeSupplier.model');
+const { db } = require('../../model/User.model');
+const bcrypt = require('bcryptjs');
 
 // https://www.ultimateakash.com/blog-details/IiwzQGAKYAo=/How-to-implement-Transactions-in-Mongoose-&-Node.Js-(Express)
 
@@ -71,6 +72,27 @@ exports.updateUserService = async (id, data) => {
     try {
         session.startTransaction();
         const user = await User.findById(id).session(session)
+
+        if (!user) {
+            throw new Error("User not found!")
+        }
+
+        if (data.password || data.newPassword) {
+
+            const isPasswordValid = user.comparePassword(data.password, user.password)
+
+            if (!isPasswordValid) {
+                throw new Error("Password didn't matched!")
+            }
+            const salt = bcrypt.genSaltSync(10);
+            const hashedPassword = bcrypt.hashSync(data.newPassword, salt);
+            const { password, newPassword, ...others } = data
+            data = {
+                ...others,
+                password: hashedPassword
+            }
+        }
+
         const updateUser = await User.updateOne({ _id: id }, { $set: data }, { runValidators: true }).session(session)
 
         const userCategory = await UserCategory.findById(user?.userCategory).select("-_id category").session(session)
@@ -133,6 +155,7 @@ exports.importPatientService = async (data) => {
         session.endSession();
     }
 }
+
 
 exports.getAllPatientService = async () => {
     const patients = await Patient.find({})
