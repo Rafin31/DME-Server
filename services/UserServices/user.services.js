@@ -78,19 +78,23 @@ exports.updateUserService = async (id, data) => {
         }
 
         if (data.password || data.newPassword) {
+            if (data.password && data.newPassword) {
+                const isPasswordValid = user.comparePassword(data.password, user.password)
 
-            const isPasswordValid = user.comparePassword(data.password, user.password)
+                if (!isPasswordValid) {
+                    throw new Error("Password didn't matched!")
+                }
+                const salt = bcrypt.genSaltSync(10);
+                const hashedPassword = bcrypt.hashSync(data.newPassword, salt);
+                const { password, newPassword, ...others } = data
+                data = {
+                    ...others,
+                    password: hashedPassword
+                }
+            } else {
+                throw new Error("Give current password and new password!")
+            }
 
-            if (!isPasswordValid) {
-                throw new Error("Password didn't matched!")
-            }
-            const salt = bcrypt.genSaltSync(10);
-            const hashedPassword = bcrypt.hashSync(data.newPassword, salt);
-            const { password, newPassword, ...others } = data
-            data = {
-                ...others,
-                password: hashedPassword
-            }
         }
 
         const updateUser = await User.updateOne({ _id: id }, { $set: data }, { runValidators: true }).session(session)
