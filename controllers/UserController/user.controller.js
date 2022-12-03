@@ -172,7 +172,7 @@ exports.loginUser = async (req, res) => {
         if (!user) {
             return res.status(401).json({
                 status: "failed",
-                message: "User not found! Please create account"
+                message: "Email or password did not matched!"
             })
         }
 
