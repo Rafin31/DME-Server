@@ -1,4 +1,5 @@
 const express = require('express');
+const { get } = require('mongoose');
 const router = express.Router()
 const userController = require("../../controllers/UserController/user.controller");
 const uploadDocument = require('../../middlewares/importDocument')
@@ -6,10 +7,8 @@ const uploadDocument = require('../../middlewares/importDocument')
 //api/v1/users
 
 router.route("/")
-    .get(userController.getAllUserService)
+    .get(userController.getAllUser)
     .post(userController.createUser)
-
-
 
 
 router.route("/login")
@@ -25,7 +24,9 @@ router.post('/import-patient', uploadDocument("patient").single("patient-list"),
 router.get('/export-patient', userController.exportPatient)
 
 router.route("/:id")
+    .get(userController.getUserByID)
     .patch(userController.updateUser)
+    .delete(userController.deleteUser)
 
 
 module.exports = router  

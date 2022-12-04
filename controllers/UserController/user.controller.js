@@ -7,13 +7,13 @@ const excelToJson = require('convert-excel-to-json');
 const path = require('path');
 
 
-exports.getAllUserService = async (req, res) => {
+exports.getAllUser = async (req, res) => {
     try {
         const users = await service.getAllUserService()
 
         const exceptCategory = users.map(({ userCategory, ...other }) => other)
-        const category = users.map(({ userCategory, ...other }) => userCategory)
-        const status = users.map(({ status, ...other }) => status)
+        const category = users.map(({ userCategory }) => userCategory)
+        const status = users.map(({ status }) => status)
 
         const userDataPlain = exceptCategory.map((user, index) => ({
             ...user,
@@ -22,11 +22,39 @@ exports.getAllUserService = async (req, res) => {
             status: status[index].status
         }))
 
-
-
         res.status(200).json({
             status: "Success",
             data: userDataPlain
+        })
+
+    } catch (error) {
+        res.status(400).json({
+            status: "failed",
+            message: error.message
+        })
+    }
+}
+
+exports.getUserByID = async (req, res) => {
+    try {
+        const { id } = req.params
+        const users = await service.findUserByIdService(id)
+
+        const { userCategory, ...exceptUserCategory } = users
+        const { status } = users
+        const { details } = users
+
+        const plainUserData = {
+            ...exceptUserCategory,
+            category: userCategory.category,
+            permission: userCategory.permission,
+            status: status.status,
+            details
+        }
+
+        res.status(200).json({
+            status: "Success",
+            data: plainUserData
         })
     } catch (error) {
         res.status(400).json({
@@ -68,6 +96,24 @@ exports.updateUser = async (req, res) => {
     }
 }
 
+exports.deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const isDeleted = await service.deleteUserService(id);
+        res.status(200).json({
+            status: "Success",
+            data: isDeleted
+        })
+    } catch (error) {
+        res.status(400).json({
+            status: "failed",
+            message: error.message
+        })
+    }
+
+
+}
+
 exports.importPatient = async (req, res) => {
     try {
         const excelData = excelToJson({
@@ -96,13 +142,20 @@ exports.importPatient = async (req, res) => {
             }
         });
 
-        const patientData = excelData.Sheet1.map((data) => ({
-            ...data,
-            userCategory: "63861b794e45673948bb7c9f", //Category Patient ID
-            status: "63861954b3b3ded1ee267309" //Status Active ID
+        const patientDob = excelData.Sheet1.map((data) => {
 
-        }));
+            const date = new Date(data.dob.toDateString())
+            return { ...data, dob: `${date.getMonth()}/${date.getDay()}/${date.getFullYear()}` }
+        })
 
+        const patientData = patientDob.map((data) => (
+            {
+                ...data,
+                userCategory: "63861b794e45673948bb7c9f", //Category Patient ID
+                status: "63861954b3b3ded1ee267309" //Status Active ID
+
+            }
+        ));
 
         const patients = await service.importPatientService(patientData)
 

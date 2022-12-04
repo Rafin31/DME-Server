@@ -11,9 +11,9 @@ const bcrypt = require('bcryptjs');
 exports.getAllUserService = async () => {
     const user = await User.find({})
         .lean()
-        .populate({ path: 'status', select: '-_id -updatedAt -createdAt -__v' })
-        .populate({ path: 'userCategory', select: '-_id -updatedAt -createdAt -__v' })
-        .select('-updatedAt -createdAt -__v')
+        .populate({ path: 'status', select: ' -updatedAt -createdAt -__v' })
+        .populate({ path: 'userCategory', select: '-updatedAt -createdAt -__v' })
+        .select('-password -updatedAt -createdAt -__v')
     return user;
 }
 
@@ -118,9 +118,84 @@ exports.updateUserService = async (id, data) => {
     }
 }
 
+exports.deleteUserService = async (id) => {
+    const session = await db.startSession();
+    try {
+        session.startTransaction();
+        const user = await User.findById(id)
+            .populate({ path: 'userCategory', select: '-updatedAt -createdAt -__v' })
+            .session(session)
+
+        if (!user) {
+            throw new Error("User not found!")
+        }
+
+        if (user.userCategory.category === "DME-Supplier") {
+            const patient = await DME_Supplier.findOne({ userId: user._id })
+                .select('_id')
+                .session(session)
+
+            if (!patient) {
+                throw new Error("User not found!")
+            }
+
+            await DME_Supplier.deleteOne({ _id: patient._id }).session(session)
+        }
+        if (user.userCategory.category === "Patient") {
+            const patient = await Patient.findOne({ userId: user._id })
+                .select('_id')
+                .session(session)
+
+            if (!patient) {
+                throw new Error("User not found!")
+            }
+
+            await Patient.deleteOne({ _id: patient._id }).session(session)
+        }
+
+
+
+        await User.deleteOne({ _id: user._id }).session(session)
+
+        await session.commitTransaction();
+        return "Deleted"
+    } catch (error) {
+        await session.abortTransaction();
+        throw new Error(error)
+    } finally {
+        session.endSession();
+    }
+
+}
+
 exports.findUserByEmailService = async (email) => {
     const user = await User.findOne({ email })
     return user;
+}
+
+exports.findUserByIdService = async (id) => {
+
+    let user = await User.findById(id)
+        .lean()
+        .populate({ path: 'status', select: ' -updatedAt -createdAt -__v' })
+        .populate({ path: 'userCategory', select: '-updatedAt -createdAt -__v' })
+        .select('-password -updatedAt -createdAt -__v');
+
+    if (!user) {
+        throw new Error("User not found!")
+    }
+
+    if (user.userCategory.category === "DME-Supplier") {
+        const details = await DME_Supplier.findOne({ userId: user._id }).select('-_id -userId -updatedAt -createdAt -__v')
+        user = { ...user, details }
+    }
+    if (user.userCategory.category === "Patient") {
+        const details = await Patient.findOne({ userId: user._id }).select('-_id -userId -updatedAt -createdAt -__v')
+        user = { ...user, details }
+    }
+
+    return user
+
 }
 
 exports.findUserStatusService = async (email) => {
@@ -160,7 +235,6 @@ exports.importPatientService = async (data) => {
     }
 }
 
-
 exports.getAllPatientService = async () => {
     const patients = await Patient.find({})
         .lean()
@@ -168,6 +242,62 @@ exports.getAllPatientService = async () => {
         .select('-updatedAt -createdAt -__v -_id')
 
     return patients
+}
+exports.getAllDmeSupplierService = async () => {
+    const dme = await DME_Supplier.find({})
+        .lean()
+        .populate({ path: "userId", select: '-_id -updatedAt -createdAt -status -userCategory -password -__v' })
+        .select('-updatedAt -createdAt -__v -_id')
+
+    return dme
+}
+
+//get Patient By UserId 
+exports.getPatientByUserIdService = async (id) => {
+
+    const patients = await Patient.findOne({ userId: id })
+        .lean()
+        .populate({
+            path: "userId",
+            select: '-updatedAt -createdAt -password -__v',
+            populate: [
+                {
+                    path: 'userCategory',
+                    select: '-_id -updatedAt -createdAt -__v',
+                },
+                {
+                    path: 'status',
+                    select: '-_id -updatedAt -createdAt -__v',
+                }
+            ]
+        })
+        .select('-updatedAt -createdAt -__v -_id')
+
+    return patients
+}
+
+//get DME By UserId 
+exports.getDmeSupplierByUserIdService = async (id) => {
+
+    const dme = await DME_Supplier.findOne({ userId: id })
+        .lean()
+        .populate({
+            path: "userId",
+            select: '-updatedAt -createdAt -password -__v',
+            populate: [
+                {
+                    path: 'userCategory',
+                    select: '-_id -updatedAt -createdAt -__v',
+                },
+                {
+                    path: 'status',
+                    select: '-_id -updatedAt -createdAt -__v',
+                }
+            ]
+        })
+        .select('-updatedAt -createdAt -__v -_id')
+
+    return dme
 }
 
 exports.createStatusService = async (data) => {
