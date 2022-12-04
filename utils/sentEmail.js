@@ -1,0 +1,29 @@
+const nodemailer = require('nodemailer');
+
+
+exports.sendMail = (emailBody) => {
+
+    var message = {
+        from: process.env.SENT_EMAIL,
+        to: "asifhossain976@gmail.com",
+        ...emailBody
+    };
+
+
+    nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.SENT_EMAIL,
+            pass: process.env.SENT_EMAIL_PASSWORD,
+        },
+        port: 465,
+        host: 'smtp.gmail.com'
+    }).sendMail(message, (err) => {
+        if (err) {
+            return new Error(err)
+        } else {
+            return "Email Sent"
+        }
+    })
+
+}

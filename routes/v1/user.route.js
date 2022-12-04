@@ -22,7 +22,8 @@ router.route("/category")
 
 router.post('/import-patient', uploadDocument("patient").single("patient-list"), userController.importPatient)
 router.get('/export-patient', userController.exportPatient)
-
+router.post('/reset-password', userController.resetPassword)
+router.get('/reset-password/confirmation/:token', (req, res) => { res.json("success") })
 router.route("/:id")
     .get(userController.getUserByID)
     .patch(userController.updateUser)

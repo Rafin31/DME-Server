@@ -1,7 +1,7 @@
 const User = require("../../model/User.model")
 const service = require("../../services/UserServices/user.services")
 const { generateToken } = require("../../utils/generateToken")
-const fs = require('fs');
+const crypto = require('crypto');
 const XLSX = require('xlsx');
 const excelToJson = require('convert-excel-to-json');
 const path = require('path');
@@ -100,6 +100,7 @@ exports.deleteUser = async (req, res) => {
     try {
         const { id } = req.params;
         const isDeleted = await service.deleteUserService(id);
+
         res.status(200).json({
             status: "Success",
             data: isDeleted
@@ -305,3 +306,37 @@ exports.category = async (req, res) => {
         })
     }
 }
+
+exports.resetPassword = async (req, res) => {
+    try {
+        const { email } = req.body
+        const token = crypto.randomBytes(64).toString('hex')
+        const date = new Date()
+        const expireToken = date.setDate(date.getDate() + 1)
+
+        const user = await service.findUserByEmailService(email)
+
+        const insertToken = await service.updateUserService(user._id, { token, expireToken })
+
+        const emailBody = {
+            subject: "RESET YOUR PASSWORD",
+            html: `<h5>Reset Your password</h5> </br> <p>Click bellow button to reset your password</p> 
+            <a href=${req.protocol}://${req.get("host")}${req.originalUrl}/confirmation/${token}>
+            <button style="background-color: #008CBA; padding: 10px 24px; border:0px; color:white; cursor:pointer" >Reset Password</button>
+            </a>`
+        }
+
+        service.sendMailService(emailBody);
+        res.status(200).json({
+            status: "Success",
+            data: "mail Sent"
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(400).json({
+            status: "Fail",
+            data: error
+        })
+    }
+}
+

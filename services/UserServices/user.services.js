@@ -5,6 +5,7 @@ const Patient = require('../../model/Patient.model');
 const DME_Supplier = require('../../model/DmeSupplier.model');
 const { db } = require('../../model/User.model');
 const bcrypt = require('bcryptjs');
+const { sendMail } = require('../../utils/sentEmail');
 
 // https://www.ultimateakash.com/blog-details/IiwzQGAKYAo=/How-to-implement-Transactions-in-Mongoose-&-Node.Js-(Express)
 
@@ -152,8 +153,6 @@ exports.deleteUserService = async (id) => {
 
             await Patient.deleteOne({ _id: patient._id }).session(session)
         }
-
-
 
         await User.deleteOne({ _id: user._id }).session(session)
 
@@ -308,4 +307,13 @@ exports.createStatusService = async (data) => {
 exports.createCategoryService = async (data) => {
     const category = await UserCategory.create(data)
     return category;
+}
+
+exports.sendMailService = async (emailBody) => {
+    try {
+        const sentEmail = sendMail(emailBody);
+        return sentEmail
+    } catch (error) {
+        throw new Error(error)
+    }
 }
