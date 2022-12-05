@@ -317,3 +317,8 @@ exports.sendMailService = async (emailBody) => {
         throw new Error(error)
     }
 }
+
+exports.findUserByToken = async (token) => {
+    const user = await User.findOne({ token: token })
+    return user
+}

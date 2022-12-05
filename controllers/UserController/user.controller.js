@@ -307,7 +307,7 @@ exports.category = async (req, res) => {
     }
 }
 
-exports.resetPassword = async (req, res) => {
+exports.resetPasswordRequest = async (req, res) => {
     try {
         const { email } = req.body
         const token = crypto.randomBytes(64).toString('hex')
@@ -327,6 +327,7 @@ exports.resetPassword = async (req, res) => {
         }
 
         service.sendMailService(emailBody);
+
         res.status(200).json({
             status: "Success",
             data: "mail Sent"
@@ -340,3 +341,79 @@ exports.resetPassword = async (req, res) => {
     }
 }
 
+exports.resetPasswordConfirmation = async (req, res) => {
+    const { token } = req.params
+
+    const user = await service.findUserByToken(token)
+
+    if (!user) {
+        return res.status(201).json({
+            status: "failed",
+            message: "Invalid Request"
+        })
+    }
+    if (new Date() > new Date(user.expireToken)) {
+        return res.status(201).json({
+            status: "failed",
+            message: "Token Expired"
+        })
+    }
+
+    // user.token = undefined;
+    // user.expireToken = undefined
+
+    user.save({ validateBeforeSave: false })
+    //  http://localhost:3000
+
+    res.writeHead(302, {
+        Location: `http://localhost:3000/forgot-password/${token}`
+    });
+    res.end();
+
+
+}
+
+
+exports.resetPasswordOperation = async (req, res) => {
+    try {
+        const { token, newPassword, confirmPassword } = req.body
+
+        if (!token || !newPassword || !confirmPassword) {
+            return res.status(400).json({
+                status: "fail",
+                data: "Missing Parameters!"
+            })
+        }
+
+        const user = await service.findUserByToken(token)
+
+
+        if (!user) {
+            return res.status(400).json({
+                status: "fail",
+                data: "Invalid Token"
+            })
+        }
+
+
+        user.token = undefined;
+        user.expireToken = undefined
+        user.password = newPassword;
+        user.confirmPassword = confirmPassword;
+
+
+        // user.save({ validateBeforeSave: true })
+        user.save({ validateModifiedOnly: true })
+
+        return res.status(200).json({
+            status: "success",
+            data: "Password Changed"
+        })
+
+    } catch (error) {
+        res.status(400).json({
+            status: "Fail",
+            data: error.message
+        })
+    }
+}

@@ -22,12 +22,15 @@ router.route("/category")
 
 router.post('/import-patient', uploadDocument("patient").single("patient-list"), userController.importPatient)
 router.get('/export-patient', userController.exportPatient)
-router.post('/reset-password', userController.resetPassword)
-router.get('/reset-password/confirmation/:token', (req, res) => { res.json("success") })
+
+router.post('/reset-password-request', userController.resetPasswordRequest)
+router.get('/reset-password-request/confirmation/:token', userController.resetPasswordConfirmation) //will come from user email
+router.post('/reset-password-operation', userController.resetPasswordOperation)
+
 router.route("/:id")
     .get(userController.getUserByID)
     .patch(userController.updateUser)
     .delete(userController.deleteUser)
 
 
-module.exports = router  
+module.exports = router
