@@ -307,6 +307,7 @@ exports.category = async (req, res) => {
     }
 }
 
+// Email will be sent
 exports.resetPasswordRequest = async (req, res) => {
     try {
         const { email } = req.body
@@ -341,6 +342,7 @@ exports.resetPasswordRequest = async (req, res) => {
     }
 }
 
+//User clicked the reset password button on the email 
 exports.resetPasswordConfirmation = async (req, res) => {
     const { token } = req.params
 
@@ -359,21 +361,17 @@ exports.resetPasswordConfirmation = async (req, res) => {
         })
     }
 
-    // user.token = undefined;
-    // user.expireToken = undefined
-
     user.save({ validateBeforeSave: false })
-    //  http://localhost:3000
 
     res.writeHead(302, {
-        Location: `http://localhost:3000/forgot-password/${token}`
+        Location: `${process.env.CLIENT_LINK}/app/forget-password-confirmation/${token}`
     });
     res.end();
 
 
 }
 
-
+//New password will be updated in database
 exports.resetPasswordOperation = async (req, res) => {
     try {
         const { token, newPassword, confirmPassword } = req.body
@@ -392,6 +390,13 @@ exports.resetPasswordOperation = async (req, res) => {
             return res.status(400).json({
                 status: "fail",
                 data: "Invalid Token"
+            })
+        }
+
+        if (new Date() > new Date(user.expireToken)) {
+            return res.status(201).json({
+                status: "failed",
+                message: "Token Expired"
             })
         }
 

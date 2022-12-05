@@ -1,10 +1,9 @@
 const express = require('express');
-const { get } = require('mongoose');
 const router = express.Router()
 const userController = require("../../controllers/UserController/user.controller");
 const uploadDocument = require('../../middlewares/importDocument')
 
-//api/v1/users
+// api/v1/users
 
 router.route("/")
     .get(userController.getAllUser)
@@ -34,3 +33,5 @@ router.route("/:id")
 
 
 module.exports = router
+
+
