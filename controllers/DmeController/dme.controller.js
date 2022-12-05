@@ -74,3 +74,20 @@ exports.deleteTask = async (req, res) => {
         })
     }
 }
+
+exports.getDashboardStates = async (req, res) => {
+    try {
+
+        const states = await service.getDashboardStatesService()
+        res.status(200).json({
+            status: "success",
+            message: states
+        })
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: error
+        })
+    }
+}

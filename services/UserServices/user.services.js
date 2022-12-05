@@ -239,7 +239,6 @@ exports.getAllPatientService = async () => {
         .lean()
         .populate({ path: "userId", select: '-_id -updatedAt -createdAt -status -userCategory -password -__v' })
         .select('-updatedAt -createdAt -__v -_id')
-
     return patients
 }
 exports.getAllDmeSupplierService = async () => {
@@ -322,3 +321,4 @@ exports.findUserByToken = async (token) => {
     const user = await User.findOne({ token: token })
     return user
 }
+

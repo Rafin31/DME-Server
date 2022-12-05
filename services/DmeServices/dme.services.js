@@ -1,4 +1,6 @@
 const Task = require("../../model/Task.model")
+const Patient = require("../../model/Patient.model")
+const DME_Supplier = require("../../model/DmeSupplier.model")
 
 exports.addTaskService = async (data) => {
     const task = await Task.create(data)
@@ -39,5 +41,16 @@ exports.deleteTaskService = async (id) => {
     const task = await Task.deleteOne({ _id: id })
     return task
 }
+exports.getDashboardStatesService = async () => {
 
+    try {
+        const patient = await Patient.estimatedDocumentCount()
+        const dme = await DME_Supplier.estimatedDocumentCount()
+        return { patient, dme }
+    } catch (error) {
+        throw new Error(error)
+    }
+
+
+}
 

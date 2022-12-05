@@ -19,6 +19,8 @@ router.route("/status")
 router.route("/category")
     .post(userController.category)
 
+
+
 router.post('/import-patient', uploadDocument("patient").single("patient-list"), userController.importPatient)
 router.get('/export-patient', userController.exportPatient)
 

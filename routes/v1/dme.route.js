@@ -7,9 +7,12 @@ router.route('/task')
     .post(dmeController.addTask)
     .get(dmeController.getTask)
 
+router.get('/dashboardStates', dmeController.getDashboardStates)
+
 router.route('/task/:id')
     .patch(dmeController.updateTask)
     .delete(dmeController.deleteTask)
+
 
 
 
