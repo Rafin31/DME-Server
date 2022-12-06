@@ -157,12 +157,19 @@ exports.deleteNotes = async (req, res) => {
 exports.uploadDocuments = async (req, res) => {
     try {
         const documentFileName = req.file.filename
+        const path = req.file.destination
+        const { uploaderId } = req.body
+        const { id: patientId } = req.params
+        const fileName = path.split('uploads/')[1] + "/" + documentFileName
+
+        const uploaded = await service.uploadDocumentsService(fileName, path, patientId, uploaderId)
 
         return res.status(200).json({
             status: "Success",
-            data: documentFileName
+            data: uploaded
         })
     } catch (error) {
+        console.log(error);
         return res.status(400).json({
             status: "Fail",
             data: error

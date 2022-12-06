@@ -2,6 +2,8 @@ const Task = require("../../model/Task.model")
 const Patient = require("../../model/Patient.model")
 const DME_Supplier = require("../../model/DmeSupplier.model")
 const Notes = require("../../model/Notes.model")
+const Document = require("../../model/Documents.model")
+const { db } = require('../../model/User.model');
 
 exports.addTaskService = async (data) => {
     const task = await Task.create(data)
@@ -61,8 +63,27 @@ exports.deleteNotesService = async (id) => {
 }
 
 //upload document
-exports.uploadDocumentsService = async (data) => {
+exports.uploadDocumentsService = async (fileName, path, patientId, uploaderId) => {
+    const session = await db.startSession();
+    try {
+        session.startTransaction();
+        const documentObject = {
+            uploaderId: uploaderId,
+            document: fileName,
+        }
+        const document = await Document.create([documentObject], { session })
+        if (path.includes("patient-documents")) {
+            await Patient.updateOne({ userId: patientId }, { $push: { document: document[0]._id } }).session(session)
+        }
+        await session.commitTransaction();
+        return document
 
+    } catch (error) {
+        await session.abortTransaction();
+        throw new Error(error)
+    } finally {
+        session.endSession();
+    }
 }
 
 exports.getDashboardStatesService = async () => {

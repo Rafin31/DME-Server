@@ -189,7 +189,10 @@ exports.findUserByIdService = async (id) => {
         user = { ...user, details }
     }
     if (user.userCategory.category === "Patient") {
-        const details = await Patient.findOne({ userId: user._id }).select('-_id -userId -updatedAt -createdAt -__v')
+        const details = await Patient
+            .findOne({ userId: user._id })
+            .populate({ path: "document", select: ' -updatedAt -createdAt -__v' })
+            .select('-_id -userId -updatedAt -createdAt -__v')
         user = { ...user, details }
     }
 

@@ -7,12 +7,12 @@ const documentSchema = mongoose.Schema({
     uploaderId: {
         type: ObjectId,
         ref: "User",
-        required: ['true', "Writer Id  is missing"]
+        required: ['true', "Uploader Id  is missing"]
     },
     document: {
-        type: ObjectId,
-        ref: "User",
-        required: ['true', "Patient Id  is missing"]
+        type: String,
+        trim: true,
+        required: ['true', "Document is missing"]
     },
     note: {
         type: String,
