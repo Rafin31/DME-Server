@@ -210,3 +210,33 @@ exports.getDashboardStates = async (req, res) => {
         })
     }
 }
+
+
+//invite staffs and doctors
+
+exports.inviteDoctor = async (req, res) => {
+
+    try {
+        const { email } = req.body
+        const emailBody = {
+            subject: "Invitation from dmedocrx",
+            html: `<h3>You are invited to create an account on dmedocrx</h3> <p>Click bellow button to create Your Account</p> 
+        <a href=${process.env.CLIENT_LINK}/signup>
+        <button style="background-color: #008CBA; padding: 10px 24px; border:0px; color:white; cursor:pointer" >Create Account</button>
+        </a>`
+        }
+
+        const invite = await service.inviteDoctors(emailBody, email)
+
+        return res.status(200).json({
+            status: "success",
+            data: invite
+        })
+
+    } catch (error) {
+        return res.status(200).json({
+            status: "success",
+            data: error
+        })
+    }
+}

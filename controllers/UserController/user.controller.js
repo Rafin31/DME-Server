@@ -317,17 +317,24 @@ exports.resetPasswordRequest = async (req, res) => {
 
         const user = await service.findUserByEmailService(email)
 
+        if (!user) {
+            return res.status(400).json({
+                status: "Fail",
+                data: "User not found!"
+            })
+        }
+
         const insertToken = await service.updateUserService(user._id, { token, expireToken })
 
         const emailBody = {
             subject: "RESET YOUR PASSWORD",
-            html: `<h5>Reset Your password</h5> </br> <p>Click bellow button to reset your password</p> 
+            html: `<h3>You have asked to Reset Your password</h3> <p>Click bellow button to reset your password</p> 
             <a href=${req.protocol}://${req.get("host")}${req.originalUrl}/confirmation/${token}>
             <button style="background-color: #008CBA; padding: 10px 24px; border:0px; color:white; cursor:pointer" >Reset Password</button>
             </a>`
         }
 
-        service.sendMailService(emailBody);
+        service.sendMailService(emailBody, email);
 
         res.status(200).json({
             status: "Success",

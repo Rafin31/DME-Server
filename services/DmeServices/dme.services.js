@@ -4,8 +4,8 @@ const DME_Supplier = require("../../model/DmeSupplier.model")
 const Notes = require("../../model/Notes.model")
 const Document = require("../../model/Documents.model")
 const { db } = require("../../model/Task.model")
-// const { db } = require('../../model/User.model');
-// const { db } = require('../../config/database.config')
+const { sendMail } = require('../../utils/sentEmail');
+
 
 exports.addTaskService = async (data) => {
     const task = await Task.create(data)
@@ -102,3 +102,15 @@ exports.getDashboardStatesService = async () => {
 
 }
 
+
+//invite Staff and doctors
+
+exports.inviteDoctors = async (emailBody, email) => {
+    try {
+        const sentEmail = sendMail(emailBody, email);
+        return "Mail Sent"
+    } catch (error) {
+        console.log(error)
+        throw new Error(error)
+    }
+}

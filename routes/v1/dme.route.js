@@ -19,7 +19,9 @@ router.post('/upload-patient-document/:id', uploadDocument("patient-documents").
 
 router.get("/get-document", dmeController.getDocuments)
 
-// router.get('/upload-document/:name', dmeController)
+
+router.post('/invite-doctor', dmeController.inviteDoctor)
+
 
 router.route('/task/:id')
     .patch(dmeController.updateTask)

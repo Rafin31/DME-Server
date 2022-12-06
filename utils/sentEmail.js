@@ -1,11 +1,11 @@
 const nodemailer = require('nodemailer');
 
 
-exports.sendMail = (emailBody) => {
+exports.sendMail = (emailBody, emailAddress) => {
 
     var message = {
         from: process.env.SENT_EMAIL,
-        to: "asifhossain976@gmail.com",
+        to: emailAddress,
         ...emailBody
     };
 

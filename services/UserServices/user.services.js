@@ -311,9 +311,9 @@ exports.createCategoryService = async (data) => {
     return category;
 }
 
-exports.sendMailService = async (emailBody) => {
+exports.sendMailService = async (emailBody, email) => {
     try {
-        const sentEmail = sendMail(emailBody);
+        const sentEmail = sendMail(emailBody, email);
         return sentEmail
     } catch (error) {
         throw new Error(error)
