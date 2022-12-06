@@ -118,7 +118,7 @@ exports.deleteUser = async (req, res) => {
 exports.importPatient = async (req, res) => {
     try {
         const excelData = excelToJson({
-            sourceFile: `./public/documents/uploads/patient/${req.file.filename}`,
+            sourceFile: `./public/documents/uploads/patient-import/${req.file.filename}`,
             header: {
                 rows: 1
             },
@@ -193,12 +193,12 @@ exports.exportPatient = async (req, res) => {
         let temp = JSON.stringify(patientDataPlain);
         temp = JSON.parse(temp);
         const ws = XLSX.utils.json_to_sheet(temp);
-        const down = './public/documents/uploads/patient/export-patient.xlsx'
+        const down = './public/documents/uploads/patient-import/export-patient.xlsx'
         XLSX.utils.book_append_sheet(wb, ws, "sheet1");
         XLSX.writeFile(wb, down);
 
 
-        res.download("./public/documents/uploads/patient/export-patient.xlsx")
+        res.download("./public/documents/uploads/patient-import/export-patient.xlsx")
 
     } catch (error) {
         console.log(error)

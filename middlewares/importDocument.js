@@ -6,7 +6,7 @@ const uploadDocument = (folderName) => {
     const storage = multer.diskStorage({
         destination: `./public/documents/uploads/${folderName}`,
         filename: (req, file, cb) => {
-            const uniqueFilename = Date.now() + '-' + Math.round(Math.random() * 1E9)
+            const uniqueFilename = Date.now() + '__' + Math.round(Math.random() * 1E9)
             cb(null, uniqueFilename + "-" + file.originalname)
         }
     })
@@ -14,12 +14,18 @@ const uploadDocument = (folderName) => {
     const uploader = multer({
         storage,
         fileFilter: (req, file, cb) => {
-            const supportedFile = /.xlsx/
+            let supportedFile
+            if (folderName === "patient-import") {
+                supportedFile = /.xlsx/
+            } else {
+                supportedFile = /.xlsx|.pdf|.doc|.jpg|.jpeg|.png/
+            }
+
             const fileExtension = path.extname(file.originalname)
             if (supportedFile.test(fileExtension)) {
                 cb(null, true)
             } else {
-                cb("Must be a .xlsx type file", false)
+                cb(`Must be a ${supportedFile.toString().replaceAll('|', " ").replaceAll('/', "").replaceAll('.', "")} type file`, false)
             }
         },
         limits: {

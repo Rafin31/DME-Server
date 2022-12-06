@@ -75,6 +75,102 @@ exports.deleteTask = async (req, res) => {
     }
 }
 
+// notes
+
+exports.addNotes = async (req, res) => {
+    try {
+        const notes = await service.addNotesService(req.body)
+        return res.status(200).json({
+            status: 'success',
+            data: notes
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error
+        })
+    }
+}
+exports.getNotes = async (req, res) => {
+    try {
+        const notes = await service.getNotesService()
+        return res.status(200).json({
+            status: 'success',
+            data: notes
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error
+        })
+    }
+}
+exports.updateNotes = async (req, res) => {
+    try {
+        const { id } = req.params
+        const notes = await service.updateNotesService(id, req.body)
+
+        if (notes.modifiedCount === 0) {
+            return res.status(400).json({
+                status: 'fail',
+                data: "Notes not found!"
+            })
+        }
+
+        return res.status(200).json({
+            status: 'success',
+            data: "Updated"
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error
+        })
+    }
+}
+exports.deleteNotes = async (req, res) => {
+    try {
+        const { id } = req.params
+        const notes = await service.deleteNotesService(id)
+
+        if (notes.deletedCount === 0) {
+            return res.status(400).json({
+                status: 'fail',
+                data: "Task not found!"
+            })
+        }
+
+        return res.status(200).json({
+            status: 'success',
+            data: notes
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error
+        })
+    }
+}
+
+//upload document 
+
+exports.uploadDocuments = async (req, res) => {
+    try {
+        const documentFileName = req.file.filename
+
+        return res.status(200).json({
+            status: "Success",
+            data: documentFileName
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: "Fail",
+            data: error
+        })
+    }
+
+}
+
 exports.getDashboardStates = async (req, res) => {
     try {
 

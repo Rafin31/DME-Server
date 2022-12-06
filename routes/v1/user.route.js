@@ -21,7 +21,7 @@ router.route("/category")
 
 
 
-router.post('/import-patient', uploadDocument("patient").single("patient-list"), userController.importPatient)
+router.post('/import-patient', uploadDocument("patient-import").single("patient-list"), userController.importPatient)
 router.get('/export-patient', userController.exportPatient)
 
 router.post('/reset-password-request', userController.resetPasswordRequest)

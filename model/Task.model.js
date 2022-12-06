@@ -6,12 +6,12 @@ const taskSchema = mongoose.Schema({
 
     dmeSupplierId: {
         type: ObjectId,
-        ref: "DME_Supplier",
+        ref: "User",
         required: ['true', "Dme Supplier Id  is missing"]
     },
     patientId: {
         type: ObjectId,
-        ref: "Patient",
+        ref: "User",
         required: ['true', "Patient Id  is missing"]
     },
     title: {
