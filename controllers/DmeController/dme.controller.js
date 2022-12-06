@@ -162,11 +162,11 @@ exports.uploadDocuments = async (req, res) => {
         const { id: patientId } = req.params
         const fileName = path.split('uploads/')[1] + "/" + documentFileName
 
-        const uploaded = await service.uploadDocumentsService(fileName, path, patientId, uploaderId)
+        // const uploaded = await service.uploadDocumentsService(fileName, path, patientId, uploaderId)
 
         return res.status(200).json({
             status: "Success",
-            data: uploaded
+            data: "uploaded"
         })
     } catch (error) {
         console.log(error);
@@ -176,6 +176,22 @@ exports.uploadDocuments = async (req, res) => {
         })
     }
 
+}
+
+exports.getDocuments = async (req, res) => {
+    try {
+
+        const { document } = req.query;
+        // await service.getDocumentsService(document)
+
+        return res.download(`./public/documents/uploads/${document}`)
+
+    } catch (error) {
+        return res.status(400).json({
+            status: "fail",
+            message: error
+        })
+    }
 }
 
 exports.getDashboardStates = async (req, res) => {

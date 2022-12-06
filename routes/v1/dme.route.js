@@ -17,6 +17,8 @@ router.get('/dashboardStates', dmeController.getDashboardStates)
 router.post('/upload-order-document', uploadDocument("order-documents").single("order-document"), dmeController.uploadDocuments)
 router.post('/upload-patient-document/:id', uploadDocument("patient-documents").single("patient-document"), dmeController.uploadDocuments)
 
+router.get("/get-document", dmeController.getDocuments)
+
 // router.get('/upload-document/:name', dmeController)
 
 router.route('/task/:id')
