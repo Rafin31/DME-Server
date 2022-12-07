@@ -23,6 +23,10 @@ router.post('/invite-therapist', dmeController.inviteTherapist)
 router.post('/invite-staff', dmeController.inviteStaff)
 
 
+router.post('/add-patient-to-doctor', dmeController.addPatientToDoctor)
+router.post('/add-patient-to-therapist', dmeController.addPatientToTherapist)
+
+
 router.post('/upload-order-document', uploadDocument("order-documents").single("order-document"), dmeController.uploadDocuments)
 router.post('/upload-patient-document/:id', uploadDocument("patient-documents").single("patient-document"), dmeController.uploadDocuments)
 

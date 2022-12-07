@@ -65,6 +65,14 @@ const patientSchema = mongoose.Schema({
         trim: true,
         required: [true, "Address is required"]
     },
+    doctor: {
+        type: [ObjectId],
+        ref: "User"
+    },
+    therapist: {
+        type: [ObjectId],
+        ref: "User"
+    },
     document: {
         type: [ObjectId],
         ref: "Document"

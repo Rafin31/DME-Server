@@ -165,6 +165,10 @@ exports.updateUserService = async (id, data) => {
 
         const userCategory = await UserCategory.findById(user?.userCategory).select("-_id category").session(session)
 
+        if (user.userCategory.category !== "DME-Supplier" && user.userCategory.category !== "Patient" && user.userCategory.category !== "Staff") {
+            throw new Error("Not Allowed!")
+        }
+
         if (userCategory.category === "DME-Supplier") {
             await DME_Supplier.updateOne({ userId: user._id }, { $set: data }, { runValidators: true }).session(session)
         }
@@ -214,11 +218,21 @@ exports.deleteUserService = async (id) => {
         }
         if (user.userCategory.category === "Patient") {
             const patient = await Patient.findOne({ userId: user._id })
-                .select('_id')
+                .select('_id userId')
                 .session(session)
 
             if (!patient) {
                 throw new Error("User not found!")
+            }
+
+            const doctor = await Doctor.findOne({ "patient": { "$in": patient.userId } })
+            const therapist = await Therapist.findOne({ "patient": { "$in": patient.userId } })
+
+            if (doctor) {
+                await Doctor.updateOne({ _id: doctor._id }, { $pull: { patient: patient.userId } })
+            }
+            if (therapist) {
+                await Therapist.updateOne({ _id: therapist._id }, { $pull: { patient: patient.userId } })
             }
 
             await Patient.deleteOne({ _id: patient._id }).session(session)
@@ -285,6 +299,8 @@ exports.findUserByIdService = async (id) => {
         const details = await Patient
             .findOne({ userId: user._id })
             .populate({ path: "document", select: ' -updatedAt -createdAt -__v' })
+            .populate({ path: "doctor", select: ' _id fullName email' })
+            .populate({ path: "therapist", select: ' _id fullName email' })
             .select('-_id -userId -updatedAt -createdAt -__v')
         user = { ...user, details }
     }

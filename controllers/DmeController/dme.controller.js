@@ -163,7 +163,7 @@ exports.uploadDocuments = async (req, res) => {
         const { id: patientId } = req.params
         const fileName = path.split('uploads/')[1] + "/" + documentFileName
 
-        // const uploaded = await service.uploadDocumentsService(fileName, path, patientId, uploaderId)
+        await service.uploadDocumentsService(fileName, path, patientId, uploaderId)
 
         return res.status(200).json({
             status: "Success",
@@ -183,14 +183,12 @@ exports.getDocuments = async (req, res) => {
     try {
 
         const { document } = req.query;
-        // await service.getDocumentsService(document)
-
         return res.download(`./public/documents/uploads/${document}`)
 
     } catch (error) {
         return res.status(400).json({
             status: "fail",
-            message: error
+            message: error.message
         })
     }
 }
@@ -303,6 +301,48 @@ exports.inviteStaff = async (req, res) => {
     }
 
 }
+
+//add patient to doctor
+
+exports.addPatientToDoctor = async (req, res) => {
+    try {
+        const { patientUserId } = req.body
+        const { doctorUserId } = req.body
+
+        const added = await service.addPatientToDoctorService(patientUserId, doctorUserId)
+
+        return res.status(200).json({
+            status: "success",
+            data: added
+        })
+
+    } catch (error) {
+        return res.status(400).json({
+            status: "fail",
+            data: error.message
+        })
+    }
+}
+exports.addPatientToTherapist = async (req, res) => {
+    try {
+        const { patientUserId } = req.body
+        const { therapistUserId } = req.body
+
+        const added = await service.addPatientToTherapistService(patientUserId, therapistUserId)
+
+        return res.status(200).json({
+            status: "success",
+            data: added
+        })
+
+    } catch (error) {
+        return res.status(400).json({
+            status: "fail",
+            data: error.message
+        })
+    }
+}
+
 
 
 // Banner

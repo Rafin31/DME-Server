@@ -2,6 +2,8 @@ const Task = require("../../model/Task.model")
 const User = require("../../model/User.model")
 const Patient = require("../../model/Patient.model")
 const DME_Supplier = require("../../model/DmeSupplier.model")
+const Doctor = require("../../model/Doctor.model")
+const Therapist = require("../../model/Therapist.model")
 const Notes = require("../../model/Notes.model")
 const Document = require("../../model/Documents.model")
 const { db } = require("../../model/Task.model")
@@ -137,12 +139,9 @@ exports.inviteEmail = async (emailBody, email) => {
         const sentEmail = sendMail(emailBody, email);
         return "Mail Sent"
     } catch (error) {
-        console.log(error)
         throw new Error(error)
     }
 }
-
-
 
 exports.uploadBannerService = async (id, data) => {
     const uploaded = await DME_Supplier.updateOne({ userId: id }, { $set: data })
@@ -151,4 +150,59 @@ exports.uploadBannerService = async (id, data) => {
 exports.getBannerService = async (id) => {
     const banner = await DME_Supplier.findOne({ userId: id }).select('banner')
     return banner
+}
+
+// add patient to doctor
+
+exports.addPatientToDoctorService = async (patientUserId, doctorUserId) => {
+
+    try {
+        const doctor = await Doctor.findOne({ userId: doctorUserId })
+        const patient = await Patient.findOne({ userId: patientUserId })
+
+        if (!doctor || !patient) {
+            throw new Error("Doctor or Patient not found")
+        }
+
+
+        if (!doctor.patient.includes(patientUserId) || !patient.doctor.push(doctorUserId)) {
+            doctor.patient.push(patientUserId);
+            patient.doctor.push(doctorUserId);
+            doctor.save({ runValidators: false })
+            patient.save({ runValidators: false })
+            return "Doctor successfully Assign to the patient"
+        }
+
+        throw new Error("Doctor Already assign to the patient")
+
+    } catch (error) {
+        throw new Error(error)
+    }
+
+}
+exports.addPatientToTherapistService = async (patientUserId, therapistUserId) => {
+
+    try {
+        const therapist = await Therapist.findOne({ userId: therapistUserId })
+        const patient = await Patient.findOne({ userId: patientUserId })
+
+        if (!therapist || !patient) {
+            throw new Error("Therapist or Patient not found")
+        }
+
+
+        if (!therapist.patient.includes(patientUserId) || !patient.therapist.push(therapistUserId)) {
+            therapist.patient.push(patientUserId);
+            patient.therapist.push(therapistUserId);
+            therapist.save({ runValidators: false })
+            patient.save({ runValidators: false })
+            return "Therapist successfully Assign to the patient"
+        }
+
+        throw new Error("Doctor Already assign to the patient")
+
+    } catch (error) {
+        throw new Error(error)
+    }
+
 }
