@@ -3,6 +3,9 @@ const UserStatus = require('../../model/UserStatus.model');
 const UserCategory = require('../../model/UserCategory.model');
 const Patient = require('../../model/Patient.model');
 const DME_Supplier = require('../../model/DmeSupplier.model');
+const Doctor = require('../../model/Doctor.model');
+const Therapist = require('../../model/Therapist.model');
+const Staff = require('../../model/Staff.model');
 const { db } = require('../../model/User.model');
 const bcrypt = require('bcryptjs');
 const { sendMail } = require('../../utils/sentEmail');
@@ -40,6 +43,34 @@ exports.createUserService = async (data) => {
             }
             await DME_Supplier.create([DME_data], { session })
         }
+        if (createdUserCategory?.category === "Doctor") {
+            const doctorData = {
+                userId: createdUser[0]?._id,
+                companyName: data?.companyName,
+                npiNumber: data?.npiNumber,
+                phoneNumber: data?.phoneNumber,
+                country: data?.country,
+                city: data?.city,
+                state: data?.state,
+                zip: data?.zip,
+                address: data?.address,
+            }
+            await Doctor.create([doctorData], { session })
+        }
+        if (createdUserCategory?.category === "Therapist") {
+            const therapistData = {
+                userId: createdUser[0]?._id,
+                companyName: data?.companyName,
+                npiNumber: data?.npiNumber,
+                phoneNumber: data?.phoneNumber,
+                country: data?.country,
+                city: data?.city,
+                state: data?.state,
+                zip: data?.zip,
+                address: data?.address,
+            }
+            await Therapist.create([therapistData], { session })
+        }
         if (createdUserCategory?.category === "Patient") {
             const patientData = {
                 userId: createdUser[0]?._id,
@@ -57,6 +88,38 @@ exports.createUserService = async (data) => {
             }
             await Patient.create([patientData], { session })
         }
+        if (createdUserCategory?.category === "Staff") {
+            if (!data.inviteToken) {
+                throw new Error("You are not allowed to signup. Contact with DME-Supplier ")
+            }
+
+            const dmeWithToken = await DME_Supplier.findOne({ inviteToken: data.inviteToken })
+                .populate({ path: "userId", select: "_id" })
+
+            if (!dmeWithToken) {
+                throw new Error("You are not allowed to signup. Contact with DME-Supplier ")
+            }
+
+            const staffData = {
+                userId: createdUser[0]?._id,
+                companyName: data?.companyName,
+                npiNumber: data?.npiNumber,
+                phoneNumber: data?.phoneNumber,
+                country: data?.country,
+                city: data?.city,
+                state: data?.state,
+                zip: data?.zip,
+                address: data?.address,
+                admin: dmeWithToken.userId._id
+            }
+            await Staff.create([staffData], { session })
+
+            dmeWithToken.staff.push(createdUser[0]?._id)
+            dmeWithToken.inviteToken = undefined
+            dmeWithToken.save({ validateModifiedOnly: true })
+
+        }
+
         await session.commitTransaction();
         return createdUser
 
@@ -131,16 +194,20 @@ exports.deleteUserService = async (id) => {
             throw new Error("User not found!")
         }
 
+        if (user.userCategory.category !== "DME-Supplier" && user.userCategory.category !== "Patient" && user.userCategory.category !== "Staff") {
+            throw new Error("Not Allowed!")
+        }
+
         if (user.userCategory.category === "DME-Supplier") {
-            const patient = await DME_Supplier.findOne({ userId: user._id })
+            const dme = await DME_Supplier.findOne({ userId: user._id })
                 .select('_id')
                 .session(session)
 
-            if (!patient) {
+            if (!dme) {
                 throw new Error("User not found!")
             }
 
-            await DME_Supplier.deleteOne({ _id: patient._id }).session(session)
+            await DME_Supplier.deleteOne({ _id: dme._id }).session(session)
         }
         if (user.userCategory.category === "Patient") {
             const patient = await Patient.findOne({ userId: user._id })
@@ -153,11 +220,26 @@ exports.deleteUserService = async (id) => {
 
             await Patient.deleteOne({ _id: patient._id }).session(session)
         }
+        if (user.userCategory.category === "Staff") {
+            const staff = await Staff.findOne({ userId: user._id })
+                .select('userId')
+                .session(session)
+
+            if (!staff) {
+                throw new Error("User not found!")
+            }
+
+            const dme = await DME_Supplier.findOne({ "staff": { "$in": user._id } })
+            await DME_Supplier.updateOne({ _id: dme._id }, { $pull: { staff: staff.userId } })
+            await Staff.deleteOne({ _id: staff._id }).session(session)
+        }
+
 
         await User.deleteOne({ _id: user._id }).session(session)
 
         await session.commitTransaction();
         return "Deleted"
+
     } catch (error) {
         await session.abortTransaction();
         throw new Error(error)

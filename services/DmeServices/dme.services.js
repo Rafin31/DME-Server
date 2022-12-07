@@ -1,4 +1,5 @@
 const Task = require("../../model/Task.model")
+const User = require("../../model/User.model")
 const Patient = require("../../model/Patient.model")
 const DME_Supplier = require("../../model/DmeSupplier.model")
 const Notes = require("../../model/Notes.model")
@@ -6,6 +7,32 @@ const Document = require("../../model/Documents.model")
 const { db } = require("../../model/Task.model")
 const { sendMail } = require('../../utils/sentEmail');
 
+
+exports.findDmeByEmail = async (email) => {
+    let user = await User.findOne({ email: email })
+        .lean()
+        .populate({ path: 'status', select: ' -updatedAt -createdAt -__v' })
+        .populate({ path: 'userCategory', select: '-updatedAt -createdAt -__v' })
+        .select('-password -updatedAt -createdAt -__v');
+
+    if (!user) {
+        throw new Error("User not found!")
+    }
+
+    if (user.userCategory.category !== "DME-Supplier") {
+        throw new Error("User not DME Supplier!")
+    }
+
+    const details = await DME_Supplier.findOne({ userId: user._id }).select('-_id -userId -updatedAt -createdAt -__v')
+    user = { ...user, details }
+
+    return user
+}
+
+exports.updateDmeService = async (id, data) => {
+    const update = await DME_Supplier.updateOne({ userId: id }, data)
+    return update
+}
 
 exports.addTaskService = async (data) => {
     const task = await Task.create(data)
@@ -105,7 +132,7 @@ exports.getDashboardStatesService = async () => {
 
 //invite Staff and doctors
 
-exports.inviteDoctors = async (emailBody, email) => {
+exports.inviteEmail = async (emailBody, email) => {
     try {
         const sentEmail = sendMail(emailBody, email);
         return "Mail Sent"
@@ -114,3 +141,5 @@ exports.inviteDoctors = async (emailBody, email) => {
         throw new Error(error)
     }
 }
+
+

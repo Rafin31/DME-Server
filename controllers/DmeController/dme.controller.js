@@ -1,4 +1,5 @@
 const service = require('../../services/DmeServices/dme.services')
+const crypto = require('crypto');
 
 exports.addTask = async (req, res) => {
     try {
@@ -226,7 +227,7 @@ exports.inviteDoctor = async (req, res) => {
         </a>`
         }
 
-        const invite = await service.inviteDoctors(emailBody, email)
+        const invite = await service.inviteEmail(emailBody, email)
 
         return res.status(200).json({
             status: "success",
@@ -239,4 +240,66 @@ exports.inviteDoctor = async (req, res) => {
             data: error
         })
     }
+}
+
+exports.inviteTherapist = async (req, res) => {
+
+    try {
+        const { email } = req.body
+        const emailBody = {
+            subject: "Invitation from dmedocrx",
+            html: `<h3>You are invited to create an account on dmedocrx</h3> <p>Click bellow button to create Your Account</p> 
+        <a href=${process.env.CLIENT_LINK}/signup>
+        <button style="background-color: #008CBA; padding: 10px 24px; border:0px; color:white; cursor:pointer" >Create Account</button>
+        </a>`
+        }
+
+        const invite = await service.inviteEmail(emailBody, email)
+
+        return res.status(200).json({
+            status: "success",
+            data: invite
+        })
+
+    } catch (error) {
+        return res.status(200).json({
+            status: "success",
+            data: error
+        })
+    }
+}
+
+exports.inviteStaff = async (req, res) => {
+    try {
+        const { dmeSupplierEmail } = req.body
+        const { staffEmail } = req.body
+        const token = crypto.randomBytes(64).toString('hex')
+        //inviteToken
+
+        const dme = await service.findDmeByEmail(dmeSupplierEmail);
+
+
+        await service.updateDmeService(dme._id, { inviteToken: token })
+
+
+        const emailBody = {
+            subject: "Invitation from dmedocrx",
+            html: `<h3>You are invited to create an account on dmedocrx</h3> <p>Click bellow button to create Your Account</p> 
+        <a href=${process.env.CLIENT_LINK}/signup?invitationToken=${token}>
+        <button style="background-color: #008CBA; padding: 10px 24px; border:0px; color:white; cursor:pointer" >Create Account</button>
+        </a>`
+        }
+        const invite = await service.inviteEmail(emailBody, staffEmail)
+
+        return res.status(200).json({
+            status: "success",
+            data: invite
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: "fail",
+            data: error.message
+        })
+    }
+
 }

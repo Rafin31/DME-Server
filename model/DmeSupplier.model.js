@@ -48,6 +48,14 @@ const dmeSupplierSchema = mongoose.Schema({
         trim: true,
         required: [true, "Address is required"]
     },
+    staff: {
+        type: [ObjectId],
+        ref: "Staff"
+    },
+    inviteToken: {
+        type: String,
+        trim: true,
+    },
 },
     { timestamps: true }
 )

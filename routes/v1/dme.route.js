@@ -21,6 +21,8 @@ router.get("/get-document", dmeController.getDocuments)
 
 
 router.post('/invite-doctor', dmeController.inviteDoctor)
+router.post('/invite-therapist', dmeController.inviteTherapist)
+router.post('/invite-staff', dmeController.inviteStaff)
 
 
 router.route('/task/:id')
