@@ -171,6 +171,9 @@ exports.updateUserService = async (id, data) => {
         if (userCategory.category === "Patient") {
             await Patient.updateOne({ userId: user._id }, { $set: data }, { runValidators: true }).session(session)
         }
+        if (userCategory.category === "Staff") {
+            await Staff.updateOne({ userId: user._id }, { $set: data }, { runValidators: true }).session(session)
+        }
 
         await session.commitTransaction();
         return updateUser;
@@ -267,13 +270,33 @@ exports.findUserByIdService = async (id) => {
     }
 
     if (user.userCategory.category === "DME-Supplier") {
-        const details = await DME_Supplier.findOne({ userId: user._id }).select('-_id -userId -updatedAt -createdAt -__v')
+        const details = await DME_Supplier.findOne({ userId: user._id })
+            .populate({ path: "staff", select: "_id email " })
+            .select('-_id -userId -updatedAt -createdAt -__v')
+        user = { ...user, details }
+    }
+    if (user.userCategory.category === "Staff") {
+        const details = await Staff.findOne({ userId: user._id })
+            .select('-_id -userId -updatedAt -createdAt -__v')
+            .populate({ path: "admin", select: "_id userId email " })
         user = { ...user, details }
     }
     if (user.userCategory.category === "Patient") {
         const details = await Patient
             .findOne({ userId: user._id })
             .populate({ path: "document", select: ' -updatedAt -createdAt -__v' })
+            .select('-_id -userId -updatedAt -createdAt -__v')
+        user = { ...user, details }
+    }
+    if (user.userCategory.category === "Doctor") {
+        const details = await Doctor.findOne({ userId: user._id })
+            .populate({ path: "patient", select: "_id email " })
+            .select('-_id -userId -updatedAt -createdAt -__v')
+        user = { ...user, details }
+    }
+    if (user.userCategory.category === "Therapist") {
+        const details = await Therapist.findOne({ userId: user._id })
+            .populate({ path: "patient", select: "_id email " })
             .select('-_id -userId -updatedAt -createdAt -__v')
         user = { ...user, details }
     }

@@ -54,7 +54,7 @@ const dmeSupplierSchema = mongoose.Schema({
     },
     staff: {
         type: [ObjectId],
-        ref: "Staff"
+        ref: "User"
     },
     inviteToken: {
         type: String,

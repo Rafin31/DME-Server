@@ -50,7 +50,7 @@ const staffSchema = mongoose.Schema({
     },
     admin: {
         type: [ObjectId],
-        ref: "DME_Supplier",
+        ref: "User",
         required: [true, "admin is required"]
     },
 },

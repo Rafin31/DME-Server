@@ -50,7 +50,7 @@ const doctorSchema = mongoose.Schema({
     },
     patient: {
         type: [ObjectId],
-        ref: "Patient"
+        ref: "User"
     },
 
 },
