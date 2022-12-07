@@ -283,6 +283,7 @@ exports.findUserByIdService = async (id) => {
         throw new Error("User not found!")
     }
 
+
     if (user.userCategory.category === "DME-Supplier") {
         const details = await DME_Supplier.findOne({ userId: user._id })
             .populate({ path: "staff", select: "_id email " })
@@ -316,6 +317,7 @@ exports.findUserByIdService = async (id) => {
             .select('-_id -userId -updatedAt -createdAt -__v')
         user = { ...user, details }
     }
+
 
     return user
 
