@@ -143,3 +143,12 @@ exports.inviteEmail = async (emailBody, email) => {
 }
 
 
+
+exports.uploadBannerService = async (id, data) => {
+    const uploaded = await DME_Supplier.updateOne({ userId: id }, { $set: data })
+    return uploaded
+}
+exports.getBannerService = async (id) => {
+    const banner = await DME_Supplier.findOne({ userId: id }).select('banner')
+    return banner
+}

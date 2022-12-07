@@ -14,8 +14,6 @@ router.route('/notes')
 
 router.get('/dashboardStates', dmeController.getDashboardStates)
 
-router.post('/upload-order-document', uploadDocument("order-documents").single("order-document"), dmeController.uploadDocuments)
-router.post('/upload-patient-document/:id', uploadDocument("patient-documents").single("patient-document"), dmeController.uploadDocuments)
 
 router.get("/get-document", dmeController.getDocuments)
 
@@ -23,6 +21,16 @@ router.get("/get-document", dmeController.getDocuments)
 router.post('/invite-doctor', dmeController.inviteDoctor)
 router.post('/invite-therapist', dmeController.inviteTherapist)
 router.post('/invite-staff', dmeController.inviteStaff)
+
+
+router.post('/upload-order-document', uploadDocument("order-documents").single("order-document"), dmeController.uploadDocuments)
+router.post('/upload-patient-document/:id', uploadDocument("patient-documents").single("patient-document"), dmeController.uploadDocuments)
+
+
+router.route("/banner/:id")
+    .post(dmeController.uploadBanner)
+    .get(dmeController.getBanner)
+
 
 
 router.route('/task/:id')

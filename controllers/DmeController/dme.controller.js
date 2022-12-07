@@ -303,3 +303,37 @@ exports.inviteStaff = async (req, res) => {
     }
 
 }
+
+
+// Banner
+exports.uploadBanner = async (req, res) => {
+    try {
+        const { id } = req.params
+        const { imgUrl } = req.body
+        const uploaded = await service.uploadBannerService(id, { banner: imgUrl })
+        return res.status(200).json({
+            status: "success",
+            data: uploaded
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: "fail",
+            data: error.message
+        })
+    }
+}
+exports.getBanner = async (req, res) => {
+    try {
+        const { id } = req.params
+        const banner = await service.getBannerService(id)
+        return res.status(200).json({
+            status: "success",
+            data: banner
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: "fail",
+            data: error.message
+        })
+    }
+}

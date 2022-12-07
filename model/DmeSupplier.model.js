@@ -48,6 +48,10 @@ const dmeSupplierSchema = mongoose.Schema({
         trim: true,
         required: [true, "Address is required"]
     },
+    banner: {
+        type: String,
+        trim: true,
+    },
     staff: {
         type: [ObjectId],
         ref: "Staff"
