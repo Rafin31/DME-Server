@@ -162,8 +162,9 @@ exports.uploadDocuments = async (req, res) => {
         const { uploaderId } = req.body
         const { id: patientId } = req.params
         const fileName = path.split('uploads/')[1] + "/" + documentFileName
+        const orderId = req.body.orderId || ""
 
-        await service.uploadDocumentsService(fileName, path, patientId, uploaderId)
+        await service.uploadDocumentsService(fileName, path, patientId, uploaderId, orderId)
 
         return res.status(200).json({
             status: "Success",
@@ -193,6 +194,7 @@ exports.getDocuments = async (req, res) => {
     }
 }
 
+//dashboard
 exports.getDashboardStates = async (req, res) => {
     try {
 

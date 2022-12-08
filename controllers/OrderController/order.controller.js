@@ -128,3 +128,53 @@ exports.updateOrder = async (req, res) => {
         })
     }
 }
+
+exports.insertOrderNote = async (req, res) => {
+    try {
+        const { id } = req.params
+        const updated = await orderService.insertOrderNoteService(req.body, id)
+
+        if (!updated) {
+            return res.status(400).json({
+                status: 'fail',
+                data: "Something Went Wrong"
+            })
+        }
+
+        return res.status(200).json({
+            status: 'success',
+            data: updated
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error.message
+        })
+    }
+}
+
+//notes
+
+exports.getNotesByOrderId = async (req, res) => {
+    try {
+        const { id } = req.params
+        const notes = await orderService.getNotesByOrderIdService(id)
+
+        if (!notes) {
+            return res.status(400).json({
+                status: 'fail',
+                data: "No notes for this order!"
+            })
+        }
+
+        return res.status(200).json({
+            status: 'success',
+            data: notes
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error.message
+        })
+    }
+}

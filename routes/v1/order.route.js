@@ -15,6 +15,10 @@ router.route("/dme-supplier")
 router.route("/status")
     .get(orderController.getOrderByStatus)
 
+router.route("/orderNote/:id")
+    .get(orderController.getNotesByOrderId)
+    .post(orderController.insertOrderNote)
+
 router.route("/:id")
     .get(orderController.getOrderById)
     .patch(orderController.updateOrder)

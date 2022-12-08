@@ -2,8 +2,10 @@ const Task = require("../../model/Task.model")
 const User = require("../../model/User.model")
 const Patient = require("../../model/Patient.model")
 const DME_Supplier = require("../../model/DmeSupplier.model")
+const Staff = require("../../model/Staff.model")
 const Doctor = require("../../model/Doctor.model")
 const Therapist = require("../../model/Therapist.model")
+const Order = require("../../model/Order.model")
 const Notes = require("../../model/Notes.model")
 const Document = require("../../model/Documents.model")
 const { db } = require("../../model/Task.model")
@@ -94,7 +96,7 @@ exports.deleteNotesService = async (id) => {
 }
 
 //upload document
-exports.uploadDocumentsService = async (fileName, path, patientId, uploaderId) => {
+exports.uploadDocumentsService = async (fileName, path, patientId, uploaderId, orderId = '') => {
     const session = await db.startSession()
     try {
         session.startTransaction();
@@ -103,8 +105,12 @@ exports.uploadDocumentsService = async (fileName, path, patientId, uploaderId) =
             document: fileName,
         }
         const document = await Document.create([documentObject], { session })
+
         if (path.includes("patient-documents")) {
             await Patient.updateOne({ userId: patientId }, { $push: { document: document[0]._id } }).session(session)
+        }
+        if (path.includes("order-documents")) {
+            await Order.updateOne({ _id: orderId }, { $push: { document: document[0]._id } }).session(session)
         }
         await session.commitTransaction();
         return document
@@ -117,13 +123,15 @@ exports.uploadDocumentsService = async (fileName, path, patientId, uploaderId) =
     }
 }
 
-
+//dashboard
 exports.getDashboardStatesService = async () => {
 
     try {
         const patient = await Patient.estimatedDocumentCount()
         const dme = await DME_Supplier.estimatedDocumentCount()
-        return { patient, dme }
+        const order = await Order.estimatedDocumentCount()
+        const staff = await Staff.estimatedDocumentCount()
+        return { patient, dme, order, staff }
     } catch (error) {
         throw new Error(error)
     }

@@ -19,8 +19,8 @@ const orderSchema = mongoose.Schema({
         trim: true
     },
     notes: {
-        type: String,
-        trim: true
+        type: ObjectId,
+        ref: "Order_Note"
     },
     document: {
         type: [ObjectId],
