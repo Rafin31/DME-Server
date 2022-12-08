@@ -43,6 +43,15 @@ exports.getOrderByDmeSupplierService = async (id) => {
 
     return order
 }
+exports.getOrderByPatientService = async (id) => {
+    const order = await Order.find({ patientId: id })
+        .lean()
+        .populate({ path: "dmeSupplierId", select: "_id fullName email" })
+        .populate({ path: "patientId", select: "_id fullName email" })
+        .select('-__v -createdAt -updatedAt')
+
+    return order
+}
 exports.getOrderByStatusService = async (status) => {
     const order = await Order.find({ status: status })
         .lean()
@@ -79,6 +88,8 @@ exports.insertOrderNoteService = async (data, orderId) => {
     const updateOrder = await Order.updateOne({ _id: orderId }, { $set: { notes: insertNote._id } }, { runValidators: true })
     return updateOrder
 }
+
+
 exports.getNotesByOrderIdService = async (orderId) => {
     let notes = await Order_Note.find({ orderId: orderId })
         .populate(

@@ -34,8 +34,32 @@ exports.getAllOrder = async (req, res) => {
 }
 exports.getOrderByDmeSupplier = async (req, res) => {
     try {
-        const { dmeSupplierId } = req.body
+        const { id: dmeSupplierId } = req.params
         const order = await orderService.getOrderByDmeSupplierService(dmeSupplierId)
+
+        if (order.length === 0) {
+            return res.status(401).json({
+                status: 'fail',
+                data: "No order found!"
+            })
+        }
+
+        return res.status(200).json({
+            status: 'success',
+            data: order
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error.message
+        })
+    }
+}
+
+exports.getOrderByPatient = async (req, res) => {
+    try {
+        const { id: patientId } = req.params
+        const order = await orderService.getOrderByPatientService(patientId)
 
         if (order.length === 0) {
             return res.status(401).json({

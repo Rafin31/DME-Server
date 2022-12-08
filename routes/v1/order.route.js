@@ -9,8 +9,11 @@ router.route("/")
     .post(orderController.createOrder)
     .get(orderController.getAllOrder)
 
-router.route("/dme-supplier")
+router.route("/dme-supplier/:id")
     .get(orderController.getOrderByDmeSupplier)
+
+router.route("/patient/:id")
+    .get(orderController.getOrderByPatient)
 
 router.route("/status")
     .get(orderController.getOrderByStatus)
