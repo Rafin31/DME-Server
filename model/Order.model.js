@@ -30,7 +30,7 @@ const orderSchema = mongoose.Schema({
         type: String,
         required: ['true', "Order Status is missing"],
         enum: {
-            values: ["Pending", "Cancelled", "Evaluation", "Evaluation-Completed", "Paper-Work-In-Process", "Prior-Auth-Status",
+            values: ["Pending", "Cancelled", "New-Referral", "Evaluation", "Evaluation-Completed", "Paper-Work-In-Process", "Prior-Auth-Status",
                 "Prior-Auth-Receive", "Holding-RTO", "RTO", "Delivered", "Authorization-Expiration-F/U", "Order-Request"],
             message: "{VALUE} is not a Order Status"
         }

@@ -21,19 +21,24 @@ exports.getAllOrderService = async () => {
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "patientId", select: "_id fullName email" })
+        .populate({ path: "notes" })
         .select('-__v -createdAt -updatedAt')
 
     return orders
 }
+
 exports.getOrderByIdService = async (id) => {
     const order = await Order.findById(id)
         .lean()
         .populate({ path: "dmeSupplierId", select: "-password -updatedAt -__v" })
         .populate({ path: "patientId", select: "-password -updatedAt -__v" })
+        .populate({ path: "notes", select: "-updatedAt -__v" })
+        .populate({ path: "document", select: "-updatedAt -__v" })
         .select('-__v -createdAt -updatedAt')
 
     return order
 }
+
 exports.getOrderByDmeSupplierService = async (id) => {
     const order = await Order.find({ dmeSupplierId: id })
         .lean()
@@ -86,7 +91,7 @@ exports.insertOrderNoteService = async (data, orderId) => {
     })
 
     const updateOrder = await Order.updateOne({ _id: orderId }, { $set: { notes: insertNote._id } }, { runValidators: true })
-    return updateOrder
+    return { updateOrder, insertNote }
 }
 
 

@@ -18,11 +18,11 @@ const uploadDocument = (folderName) => {
             if (folderName === "patient-import") {
                 supportedFile = /.xlsx/
             } else {
-                supportedFile = /.xlsx|.pdf|.doc|.jpg|.jpeg|.png/
+                supportedFile = /.xlsx|.pdf|.doc|.jpg|.jpeg|.png|.txt/
             }
 
             const fileExtension = path.extname(file.originalname)
-            if (supportedFile.test(fileExtension)) {
+            if (supportedFile.test(fileExtension.toLocaleLowerCase())) {
                 cb(null, true)
             } else {
                 cb(`Must be a ${supportedFile.toString().replaceAll('|', " ").replaceAll('/', "").replaceAll('.', "")} type file`, false)

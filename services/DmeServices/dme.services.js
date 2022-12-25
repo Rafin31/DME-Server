@@ -42,6 +42,7 @@ exports.addTaskService = async (data) => {
     const task = await Task.create(data)
     return task
 }
+
 exports.getTaskService = async () => {
     const task = await Task
         .find({})
@@ -58,14 +59,62 @@ exports.getTaskService = async () => {
         .select("-__v -createdAt -updatedAt")
     return task
 }
+
+exports.getTaskByDmeIdService = async (id) => {
+    const task = await Task
+        .find({ dmeSupplierId: id })
+        .populate({
+            path: "patientId",
+            select: "_id fullName email"
+
+        })
+        .populate({
+            path: "dmeSupplierId",
+            select: '_id fullName email'
+        })
+
+        .select("-__v -createdAt -updatedAt")
+
+
+    if (!task) {
+        return "No Task Found!"
+    }
+
+
+    return task
+}
+
+exports.getTaskByIdService = async (id) => {
+    const task = await Task.find({ _id: id })
+    return task
+}
+
+exports.deleteDocumentsService = async (doc, docId, orderId) => {
+
+    if (doc === "order-documents") {
+        const docDelete = await Document.deleteOne({ _id: docId })
+        const order = await Order.updateOne({ _id: orderId }, { $pull: { document: docId } })
+        return { docDelete, order }
+    }
+    if (doc === "patient-document") {
+
+        return { doc, id }
+    }
+}
+
+
 exports.updateTaskService = async (id, data) => {
     const task = await Task.updateOne({ _id: id }, { $set: data }, { runValidators: true })
     return task
 }
+
+
 exports.deleteTaskService = async (id) => {
     const task = await Task.deleteOne({ _id: id })
     return task
 }
+
+
 
 //notes
 exports.addNotesService = async (data) => {
@@ -124,14 +173,16 @@ exports.uploadDocumentsService = async (fileName, path, patientId, uploaderId, o
 }
 
 //dashboard
-exports.getDashboardStatesService = async () => {
+exports.getDashboardStatesService = async (dmeSupplierId) => {
 
     try {
         const patient = await Patient.estimatedDocumentCount()
-        const dme = await DME_Supplier.estimatedDocumentCount()
-        const order = await Order.estimatedDocumentCount()
+        const doctors = await Doctor.estimatedDocumentCount()
+        const order = await Order.find({ dmeSupplierId: dmeSupplierId })
         const staff = await Staff.estimatedDocumentCount()
-        return { patient, dme, order, staff }
+        const therapist = await Therapist.estimatedDocumentCount()
+        const orderCount = order.length
+        return { patient, doctors, orderCount, therapist, staff }
     } catch (error) {
         throw new Error(error)
     }

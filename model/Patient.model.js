@@ -14,7 +14,7 @@ const patientSchema = mongoose.Schema({
         trim: true,
         required: [true, "Gender is required"],
         enum: {
-            values: ["Male", "Female", "Other"],
+            values: ["Male", "male", "Female", "female", "Other", "other"],
             message: "{VALUE} is not a gender"
         }
     },
@@ -36,7 +36,7 @@ const patientSchema = mongoose.Schema({
     country: {
         type: String,
         trim: true,
-        required: [true, "Country is required"]
+        // required: [true, "Country is required"]
     },
     city: {
         type: String,

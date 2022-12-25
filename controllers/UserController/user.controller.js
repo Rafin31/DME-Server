@@ -264,12 +264,17 @@ exports.loginUser = async (req, res) => {
             token: token,
         }
 
+        // res.cookie("jwtToken", token, {
+        //     expires: new Date(Date.now() + 25892000000),
+        //     httpOnly: true,
+        //     secure: true,
+        //     sameSite: "none",
+        // })
+
         res.status(200).json({
             status: "Success",
             data: userPlainData,
         })
-
-
 
     } catch (error) {
         res.status(400).json({

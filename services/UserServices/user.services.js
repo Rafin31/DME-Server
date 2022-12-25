@@ -165,8 +165,8 @@ exports.updateUserService = async (id, data) => {
 
         const userCategory = await UserCategory.findById(user?.userCategory).select("-_id category").session(session)
 
-        if (user.userCategory.category !== "DME-Supplier" && user.userCategory.category !== "Patient" && user.userCategory.category !== "Staff") {
-            throw new Error("Not Allowed!")
+        if (userCategory.category === "Doctor" || userCategory.category === "Therapist") {
+            throw new Error("Not Allowed")
         }
 
         if (userCategory.category === "DME-Supplier") {

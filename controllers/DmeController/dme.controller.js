@@ -15,6 +15,7 @@ exports.addTask = async (req, res) => {
         })
     }
 }
+
 exports.getTask = async (req, res) => {
     try {
         const task = await service.getTaskService()
@@ -29,6 +30,39 @@ exports.getTask = async (req, res) => {
         })
     }
 }
+
+exports.getTaskByDmeId = async (req, res) => {
+    try {
+        const { id } = req.params
+        const task = await service.getTaskByDmeIdService(id)
+        return res.status(200).json({
+            status: 'success',
+            data: task
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error.message
+        })
+    }
+}
+
+exports.getTaskById = async (req, res) => {
+    try {
+        const { id } = req.params
+        const task = await service.getTaskByIdService(id)
+        return res.status(200).json({
+            status: 'success',
+            data: task
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error.message
+        })
+    }
+}
+
 exports.updateTask = async (req, res) => {
     try {
         const { id } = req.params
@@ -194,11 +228,36 @@ exports.getDocuments = async (req, res) => {
     }
 }
 
+exports.deleteDocuments = async (req, res) => {
+    try {
+
+        const { document } = req.query
+        const { id: docId } = req.params
+        const { orderId } = req.body
+
+        const deleteDoc = await service.deleteDocumentsService(document, docId, orderId)
+
+        return res.status(200).json({
+            status: "success",
+            message: deleteDoc
+        })
+
+    } catch (error) {
+        return res.status(400).json({
+            status: "fail",
+            message: error.message
+        })
+    }
+}
+
 //dashboard
 exports.getDashboardStates = async (req, res) => {
     try {
 
-        const states = await service.getDashboardStatesService()
+        const { id } = req.params
+
+        const states = await service.getDashboardStatesService(id)
+
         res.status(200).json({
             status: "success",
             message: states

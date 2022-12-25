@@ -12,10 +12,10 @@ router.route('/notes')
     .post(dmeController.addNotes)
     .get(dmeController.getNotes)
 
-router.get('/dashboardStates', dmeController.getDashboardStates)
 
 
 router.get("/get-document", dmeController.getDocuments)
+
 
 
 router.post('/invite-doctor', dmeController.inviteDoctor)
@@ -31,13 +31,21 @@ router.post('/upload-order-document', uploadDocument("order-documents").single("
 router.post('/upload-patient-document/:id', uploadDocument("patient-documents").single("patient-document"), dmeController.uploadDocuments)
 
 
+router.get('/dashboardStates/:id', dmeController.getDashboardStates)
+
+router.delete('/delete-document/:id', dmeController.deleteDocuments)
+
 router.route("/banner/:id")
     .post(dmeController.uploadBanner)
     .get(dmeController.getBanner)
 
 
 
+router.route('/dme-task/:id')
+    .get(dmeController.getTaskByDmeId)
+
 router.route('/task/:id')
+    .get(dmeController.getTaskById)
     .patch(dmeController.updateTask)
     .delete(dmeController.deleteTask)
 
