@@ -44,6 +44,7 @@ exports.getOrderByDmeSupplierService = async (id) => {
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "patientId", select: "_id fullName email" })
+        .populate({ path: "notes", select: "-updatedAt -__v" })
         .select('-__v -createdAt -updatedAt')
 
     return order

@@ -38,8 +38,8 @@ exports.getOrderByDmeSupplier = async (req, res) => {
         const order = await orderService.getOrderByDmeSupplierService(dmeSupplierId)
 
         if (order.length === 0) {
-            return res.status(401).json({
-                status: 'fail',
+            return res.status(200).json({
+                status: 'success',
                 data: "No order found!"
             })
         }

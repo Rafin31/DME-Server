@@ -50,7 +50,7 @@ const therapistSchema = mongoose.Schema({
     },
     patient: {
         type: [ObjectId],
-        ref: "Patient"
+        ref: "User"
     },
 
 },

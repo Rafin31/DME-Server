@@ -92,6 +92,7 @@ exports.getTaskByIdService = async (id) => {
 exports.deleteDocumentsService = async (doc, docId, orderId) => {
 
     if (doc === "order-documents") {
+        console.log(docId, orderId)
         const docDelete = await Document.deleteOne({ _id: docId })
         const order = await Order.updateOne({ _id: orderId }, { $pull: { document: docId } })
         return { docDelete, order }
@@ -258,7 +259,7 @@ exports.addPatientToTherapistService = async (patientUserId, therapistUserId) =>
             return "Therapist successfully Assign to the patient"
         }
 
-        throw new Error("Doctor Already assign to the patient")
+        throw new Error("Therapist Already assign to the patient")
 
     } catch (error) {
         throw new Error(error)

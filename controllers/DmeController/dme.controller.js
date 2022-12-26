@@ -234,7 +234,6 @@ exports.deleteDocuments = async (req, res) => {
         const { document } = req.query
         const { id: docId } = req.params
         const { orderId } = req.body
-
         const deleteDoc = await service.deleteDocumentsService(document, docId, orderId)
 
         return res.status(200).json({
