@@ -126,6 +126,7 @@ exports.addNotes = async (req, res) => {
         })
     }
 }
+
 exports.getNotes = async (req, res) => {
     try {
         const notes = await service.getNotesService()
@@ -140,6 +141,32 @@ exports.getNotes = async (req, res) => {
         })
     }
 }
+
+exports.getNotesByDmeAndPatient = async (req, res) => {
+    try {
+        const { writerId, patientId } = req.query
+        const notes = await service.getNotesByDmeAndPatientService(writerId, patientId)
+
+
+        if (!notes) {
+            return res.status(200).json({
+                status: 'success',
+                data: []
+            })
+        }
+
+        return res.status(200).json({
+            status: 'success',
+            data: notes
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error
+        })
+    }
+}
+
 exports.updateNotes = async (req, res) => {
     try {
         const { id } = req.params
@@ -163,6 +190,7 @@ exports.updateNotes = async (req, res) => {
         })
     }
 }
+
 exports.deleteNotes = async (req, res) => {
     try {
         const { id } = req.params

@@ -179,7 +179,7 @@ exports.exportPatient = async (req, res) => {
     try {
         const patients = await service.getAllPatientService();
 
-        const exceptUserID = patients.map(({ userId, ...other }) => other)
+        const exceptUserID = patients.map(({ userId, document, doctor, therapist, ...other }) => other)
         const userID = patients.map(({ userId, ...other }) => userId)
 
         const patientDataPlain = exceptUserID.map((user, index) => ({

@@ -122,6 +122,7 @@ exports.addNotesService = async (data) => {
     const task = await Notes.create(data)
     return task
 }
+
 exports.getNotesService = async () => {
     const notes = await Notes
         .find({})
@@ -136,10 +137,27 @@ exports.getNotesService = async () => {
         .select("-__v -createdAt -updatedAt")
     return notes
 }
+
+exports.getNotesByDmeAndPatientService = async (dmeId, patient_Id) => {
+    const notes = await Notes
+        .find({ $and: [{ writerId: dmeId }, { patientId: patient_Id }] })
+        .populate({
+            path: "patientId",
+            select: "_id fullName email"
+        })
+        .populate({
+            path: "writerId",
+            select: "_id fullName email"
+        })
+        .select("-__v -updatedAt")
+    return notes
+}
+
 exports.updateNotesService = async (id, data) => {
     const notes = await Notes.updateOne({ _id: id }, { $set: data }, { runValidators: true })
     return notes
 }
+
 exports.deleteNotesService = async (id) => {
     const notes = await Notes.deleteOne({ _id: id })
     return notes

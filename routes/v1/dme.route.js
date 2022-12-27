@@ -12,7 +12,8 @@ router.route('/notes')
     .post(dmeController.addNotes)
     .get(dmeController.getNotes)
 
-
+router.route('/notes-dme-patient')
+    .get(dmeController.getNotesByDmeAndPatient)
 
 router.get("/get-document", dmeController.getDocuments)
 
