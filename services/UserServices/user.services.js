@@ -6,6 +6,7 @@ const DME_Supplier = require('../../model/DmeSupplier.model');
 const Doctor = require('../../model/Doctor.model');
 const Therapist = require('../../model/Therapist.model');
 const Staff = require('../../model/Staff.model');
+const Invited_Staff = require("../../model/InvitedStaff.model")
 const { db } = require('../../model/User.model');
 const bcrypt = require('bcryptjs');
 const { sendMail } = require('../../utils/sentEmail');
@@ -97,7 +98,7 @@ exports.createUserService = async (data) => {
                 .populate({ path: "userId", select: "_id" })
 
             if (!dmeWithToken) {
-                throw new Error("You are not allowed to signup. Contact with DME-Supplier ")
+                throw new Error("You are not allowed to signup. Contact with your DME-Supplier ")
             }
 
             const staffData = {
@@ -113,9 +114,10 @@ exports.createUserService = async (data) => {
                 admin: dmeWithToken.userId._id
             }
             await Staff.create([staffData], { session })
+            await Invited_Staff.deleteOne({ inviteToken: data.inviteToken })
 
             dmeWithToken.staff.push(createdUser[0]?._id)
-            dmeWithToken.inviteToken = undefined
+            dmeWithToken.inviteToken.pull(data.inviteToken)
             dmeWithToken.save({ validateModifiedOnly: true })
 
         }
@@ -299,7 +301,7 @@ exports.findUserByIdService = async (id) => {
     if (user.userCategory.category === "Patient") {
         const details = await Patient
             .findOne({ userId: user._id })
-            .populate({ path: "document", select: ' -updatedAt -createdAt -__v' })
+            .populate({ path: "document", select: ' -updatedAt -__v' })
             .populate({ path: "doctor", select: ' _id fullName email' })
             .populate({ path: "therapist", select: ' _id fullName email' })
             .select('-_id -userId -updatedAt -createdAt -__v')

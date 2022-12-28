@@ -3,6 +3,7 @@ const User = require("../../model/User.model")
 const Patient = require("../../model/Patient.model")
 const DME_Supplier = require("../../model/DmeSupplier.model")
 const Staff = require("../../model/Staff.model")
+const Invited_Staff = require("../../model/InvitedStaff.model")
 const Doctor = require("../../model/Doctor.model")
 const Therapist = require("../../model/Therapist.model")
 const Order = require("../../model/Order.model")
@@ -34,6 +35,12 @@ exports.findDmeByEmail = async (email) => {
 }
 
 exports.updateDmeService = async (id, data) => {
+
+    if (data.inviteToken) {
+        const update = await DME_Supplier.updateOne({ userId: id }, { $push: { inviteToken: data.inviteToken } })
+        return update
+    }
+
     const update = await DME_Supplier.updateOne({ userId: id }, data)
     return update
 }
@@ -89,17 +96,22 @@ exports.getTaskByIdService = async (id) => {
     return task
 }
 
-exports.deleteDocumentsService = async (doc, docId, orderId) => {
+exports.deleteDocumentsService = async (doc, docId, body) => {
 
     if (doc === "order-documents") {
-        console.log(docId, orderId)
+
+        const { orderId } = body
         const docDelete = await Document.deleteOne({ _id: docId })
         const order = await Order.updateOne({ _id: orderId }, { $pull: { document: docId } })
         return { docDelete, order }
     }
     if (doc === "patient-document") {
+        const { patientId } = body
 
-        return { doc, id }
+        const docDelete = await Document.deleteOne({ _id: docId })
+        const patient = await Patient.updateOne({ userId: patientId }, { $pull: { document: docId } })
+
+        return { docDelete, patient }
     }
 }
 
@@ -221,10 +233,18 @@ exports.inviteEmail = async (emailBody, email) => {
     }
 }
 
+exports.inviteStaffService = async (data) => {
+
+    const invited = await Invited_Staff.create(data)
+    return invited
+
+}
+
 exports.uploadBannerService = async (id, data) => {
     const uploaded = await DME_Supplier.updateOne({ userId: id }, { $set: data })
     return uploaded
 }
+
 exports.getBannerService = async (id) => {
     const banner = await DME_Supplier.findOne({ userId: id }).select('banner')
     return banner

@@ -7,6 +7,16 @@ const staffController = require('../../controllers/StaffController/staff.control
 router.route("/")
     .get(staffController.getAllStaff)
 
+router.route("/invited-staff/:id")
+    .get(staffController.invitedStaff)
+
+router.route("/delete-invited-staff/:token")
+    .delete(staffController.deleteInvitedStaff)
+
+router.route("/delete-registered-staff/:id")
+    .delete(staffController.deleteRegisteredStaff)
+
+
 
 module.exports = router
 

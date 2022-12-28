@@ -261,8 +261,10 @@ exports.deleteDocuments = async (req, res) => {
 
         const { document } = req.query
         const { id: docId } = req.params
-        const { orderId } = req.body
-        const deleteDoc = await service.deleteDocumentsService(document, docId, orderId)
+
+
+
+        const deleteDoc = await service.deleteDocumentsService(document, docId, req.body)
 
         return res.status(200).json({
             status: "success",
@@ -364,6 +366,19 @@ exports.inviteStaff = async (req, res) => {
 
         const dme = await service.findDmeByEmail(dmeSupplierEmail);
 
+        const invitedData = {
+            email: staffEmail,
+            admin: dme?._id,
+            inviteToken: token
+        }
+        const invited = await service.inviteStaffService(invitedData)
+
+        if (!invited || !dme) {
+            return res.status(400).json({
+                status: "fail",
+                message: "Something went Wrong!"
+            })
+        }
 
         await service.updateDmeService(dme._id, { inviteToken: token })
 
