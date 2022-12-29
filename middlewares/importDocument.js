@@ -17,6 +17,8 @@ const uploadDocument = (folderName) => {
             let supportedFile
             if (folderName === "patient-import") {
                 supportedFile = /.xlsx/
+            } else if (folderName === "dme-banner") {
+                supportedFile = /.jpg|.jpeg|.png/
             } else {
                 supportedFile = /.xlsx|.pdf|.doc|.jpg|.jpeg|.png|.txt/
             }

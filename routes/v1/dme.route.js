@@ -36,11 +36,8 @@ router.get('/dashboardStates/:id', dmeController.getDashboardStates)
 
 router.delete('/delete-document/:id', dmeController.deleteDocuments)
 
-router.route("/banner/:id")
-    .post(dmeController.uploadBanner)
-    .get(dmeController.getBanner)
 
-
+router.post("/banner/:id", uploadDocument("dme-banner").single("dme-banner"), dmeController.uploadBanner)
 
 router.route('/dme-task/:id')
     .get(dmeController.getTaskByDmeId)

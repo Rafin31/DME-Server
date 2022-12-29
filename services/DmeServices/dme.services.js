@@ -189,9 +189,11 @@ exports.uploadDocumentsService = async (fileName, path, patientId, uploaderId, o
         if (path.includes("patient-documents")) {
             await Patient.updateOne({ userId: patientId }, { $push: { document: document[0]._id } }).session(session)
         }
+
         if (path.includes("order-documents")) {
             await Order.updateOne({ _id: orderId }, { $push: { document: document[0]._id } }).session(session)
         }
+
         await session.commitTransaction();
         return document
 
@@ -241,6 +243,7 @@ exports.inviteStaffService = async (data) => {
 }
 
 exports.uploadBannerService = async (id, data) => {
+
     const uploaded = await DME_Supplier.updateOne({ userId: id }, { $set: data })
     return uploaded
 }

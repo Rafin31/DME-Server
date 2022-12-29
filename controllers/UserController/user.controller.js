@@ -72,7 +72,7 @@ exports.createUser = async (req, res) => {
             data: user
         })
     } catch (error) {
-        console.log(error);
+
         res.status(400).json({
             status: "failed",
             message: error.message
@@ -202,7 +202,7 @@ exports.exportPatient = async (req, res) => {
         res.download("./public/documents/uploads/patient-import/export-patient.xlsx")
 
     } catch (error) {
-        console.log(error)
+
         res.status(200).json({
             status: "fail",
             data: error
@@ -347,7 +347,7 @@ exports.resetPasswordRequest = async (req, res) => {
             data: "mail Sent"
         })
     } catch (error) {
-        console.log(error)
+
         res.status(400).json({
             status: "Fail",
             data: error
@@ -377,7 +377,7 @@ exports.resetPasswordConfirmation = async (req, res) => {
     user.save({ validateBeforeSave: false })
 
     res.writeHead(302, {
-        Location: `${process.env.CLIENT_LINK}/app/forget-password-confirmation/${token}`
+        Location: `${process.env.CLIENT_LINK}/forget-password-confirmation/${token}`
     });
     res.end();
 
@@ -409,7 +409,14 @@ exports.resetPasswordOperation = async (req, res) => {
         if (new Date() > new Date(user.expireToken)) {
             return res.status(201).json({
                 status: "failed",
-                message: "Token Expired"
+                data: "Token Expired"
+            })
+        }
+
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({
+                status: "Fail",
+                data: "Password did not matched!"
             })
         }
 
@@ -420,7 +427,6 @@ exports.resetPasswordOperation = async (req, res) => {
         user.confirmPassword = confirmPassword;
 
 
-        // user.save({ validateBeforeSave: true })
         user.save({ validateModifiedOnly: true })
 
         return res.status(200).json({

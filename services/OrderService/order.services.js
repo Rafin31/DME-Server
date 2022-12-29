@@ -100,7 +100,7 @@ exports.getNotesByOrderIdService = async (orderId) => {
     let notes = await Order_Note.find({ orderId: orderId })
         .populate(
             {
-                path: 'writerId', select: "_id fullName email",
+                path: 'writerId', select: "-password",
                 populate: [
                     {
                         path: 'userCategory',

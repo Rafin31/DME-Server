@@ -22,7 +22,7 @@ exports.getAllTherapistService = async () => {
         .populate({ path: "patient", select: "_id email fullName" })
         .select('-__v -createdAt -updatedAt')
 
-    console.log(therapist);
+
 
     return therapist
 }

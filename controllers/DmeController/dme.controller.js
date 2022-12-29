@@ -233,7 +233,6 @@ exports.uploadDocuments = async (req, res) => {
             data: "uploaded"
         })
     } catch (error) {
-        console.log(error);
         return res.status(400).json({
             status: "Fail",
             data: error
@@ -451,12 +450,17 @@ exports.addPatientToTherapist = async (req, res) => {
 // Banner
 exports.uploadBanner = async (req, res) => {
     try {
+
+        const bannerFileName = req.file.filename
+        const path = req.file.destination
         const { id } = req.params
-        const { imgUrl } = req.body
-        const uploaded = await service.uploadBannerService(id, { banner: imgUrl })
+        const fileName = path.split('uploads/')[1] + "/" + bannerFileName
+
+        const bannerUploaded = await service.uploadBannerService(id, { banner: fileName })
+
         return res.status(200).json({
             status: "success",
-            data: uploaded
+            data: bannerUploaded
         })
     } catch (error) {
         return res.status(400).json({
