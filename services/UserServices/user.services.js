@@ -2,6 +2,7 @@ const User = require('../../model/User.model');
 const UserStatus = require('../../model/UserStatus.model');
 const UserCategory = require('../../model/UserCategory.model');
 const Patient = require('../../model/Patient.model');
+const Veteran = require('../../model/Veteran.model');
 const DME_Supplier = require('../../model/DmeSupplier.model');
 const Doctor = require('../../model/Doctor.model');
 const Therapist = require('../../model/Therapist.model');
@@ -44,6 +45,7 @@ exports.createUserService = async (data) => {
             }
             await DME_Supplier.create([DME_data], { session })
         }
+
         if (createdUserCategory?.category === "Doctor") {
             const doctorData = {
                 userId: createdUser[0]?._id,
@@ -58,6 +60,7 @@ exports.createUserService = async (data) => {
             }
             await Doctor.create([doctorData], { session })
         }
+
         if (createdUserCategory?.category === "Therapist") {
             const therapistData = {
                 userId: createdUser[0]?._id,
@@ -71,6 +74,19 @@ exports.createUserService = async (data) => {
                 address: data?.address,
             }
             await Therapist.create([therapistData], { session })
+        }
+
+        if (createdUserCategory?.category === "Veteran") {
+            const veteranData = {
+                userId: createdUser[0]?._id,
+                phoneNumber: data?.phoneNumber,
+                country: data?.country,
+                city: data?.city,
+                state: data?.state,
+                address: data?.address,
+                document: data?.document,
+            }
+            await Veteran.create([veteranData], { session })
         }
         if (createdUserCategory?.category === "Patient") {
             const patientData = {
@@ -89,6 +105,7 @@ exports.createUserService = async (data) => {
             }
             await Patient.create([patientData], { session })
         }
+
         if (createdUserCategory?.category === "Staff") {
             if (!data.inviteToken) {
                 throw new Error("You are not allowed to signup. Contact with DME-Supplier ")
@@ -298,6 +315,7 @@ exports.findUserByIdService = async (id) => {
             .populate({ path: "admin", select: "_id userId email " })
         user = { ...user, details }
     }
+
     if (user.userCategory.category === "Patient") {
         const details = await Patient
             .findOne({ userId: user._id })
@@ -307,6 +325,14 @@ exports.findUserByIdService = async (id) => {
             .select('-_id -userId -updatedAt -createdAt -__v')
         user = { ...user, details }
     }
+
+    if (user.userCategory.category === "Veteran") {
+        const details = await Veteran
+            .findOne({ userId: user._id })
+            .select('-_id -userId -updatedAt -createdAt -__v')
+        user = { ...user, details }
+    }
+
     if (user.userCategory.category === "Doctor") {
         const details = await Doctor.findOne({ userId: user._id })
             .populate({ path: "patient", select: "_id email " })

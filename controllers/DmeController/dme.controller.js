@@ -1,9 +1,11 @@
-const service = require('../../services/DmeServices/dme.services')
+const dmeService = require('../../services/DmeServices/dme.services')
+
 const crypto = require('crypto');
+const { generateToken } = require('../../utils/generateInviteToken');
 
 exports.addTask = async (req, res) => {
     try {
-        const task = await service.addTaskService(req.body)
+        const task = await dmeService.addTaskService(req.body)
         return res.status(200).json({
             status: 'success',
             data: task
@@ -18,7 +20,7 @@ exports.addTask = async (req, res) => {
 
 exports.getTask = async (req, res) => {
     try {
-        const task = await service.getTaskService()
+        const task = await dmeService.getTaskService()
         return res.status(200).json({
             status: 'success',
             data: task
@@ -34,7 +36,7 @@ exports.getTask = async (req, res) => {
 exports.getTaskByDmeId = async (req, res) => {
     try {
         const { id } = req.params
-        const task = await service.getTaskByDmeIdService(id)
+        const task = await dmeService.getTaskByDmeIdService(id)
         return res.status(200).json({
             status: 'success',
             data: task
@@ -50,7 +52,7 @@ exports.getTaskByDmeId = async (req, res) => {
 exports.getTaskById = async (req, res) => {
     try {
         const { id } = req.params
-        const task = await service.getTaskByIdService(id)
+        const task = await dmeService.getTaskByIdService(id)
         return res.status(200).json({
             status: 'success',
             data: task
@@ -66,7 +68,7 @@ exports.getTaskById = async (req, res) => {
 exports.updateTask = async (req, res) => {
     try {
         const { id } = req.params
-        const task = await service.updateTaskService(id, req.body)
+        const task = await dmeService.updateTaskService(id, req.body)
 
         if (task.modifiedCount === 0) {
             return res.status(400).json({
@@ -89,7 +91,7 @@ exports.updateTask = async (req, res) => {
 exports.deleteTask = async (req, res) => {
     try {
         const { id } = req.params
-        const task = await service.deleteTaskService(id)
+        const task = await dmeService.deleteTaskService(id)
 
         if (task.deletedCount === 0) {
             return res.status(400).json({
@@ -114,7 +116,7 @@ exports.deleteTask = async (req, res) => {
 
 exports.addNotes = async (req, res) => {
     try {
-        const notes = await service.addNotesService(req.body)
+        const notes = await dmeService.addNotesService(req.body)
         return res.status(200).json({
             status: 'success',
             data: notes
@@ -129,7 +131,7 @@ exports.addNotes = async (req, res) => {
 
 exports.getNotes = async (req, res) => {
     try {
-        const notes = await service.getNotesService()
+        const notes = await dmeService.getNotesService()
         return res.status(200).json({
             status: 'success',
             data: notes
@@ -145,7 +147,7 @@ exports.getNotes = async (req, res) => {
 exports.getNotesByDmeAndPatient = async (req, res) => {
     try {
         const { writerId, patientId } = req.query
-        const notes = await service.getNotesByDmeAndPatientService(writerId, patientId)
+        const notes = await dmeService.getNotesByDmeAndPatientService(writerId, patientId)
 
 
         if (!notes) {
@@ -170,7 +172,7 @@ exports.getNotesByDmeAndPatient = async (req, res) => {
 exports.updateNotes = async (req, res) => {
     try {
         const { id } = req.params
-        const notes = await service.updateNotesService(id, req.body)
+        const notes = await dmeService.updateNotesService(id, req.body)
 
         if (notes.modifiedCount === 0) {
             return res.status(400).json({
@@ -194,7 +196,7 @@ exports.updateNotes = async (req, res) => {
 exports.deleteNotes = async (req, res) => {
     try {
         const { id } = req.params
-        const notes = await service.deleteNotesService(id)
+        const notes = await dmeService.deleteNotesService(id)
 
         if (notes.deletedCount === 0) {
             return res.status(400).json({
@@ -226,7 +228,7 @@ exports.uploadDocuments = async (req, res) => {
         const fileName = path.split('uploads/')[1] + "/" + documentFileName
         const orderId = req.body.orderId || ""
 
-        await service.uploadDocumentsService(fileName, path, patientId, uploaderId, orderId)
+        await dmeService.uploadDocumentsService(fileName, path, patientId, uploaderId, orderId)
 
         return res.status(200).json({
             status: "Success",
@@ -263,7 +265,7 @@ exports.deleteDocuments = async (req, res) => {
 
 
 
-        const deleteDoc = await service.deleteDocumentsService(document, docId, req.body)
+        const deleteDoc = await dmeService.deleteDocumentsService(document, docId, req.body)
 
         return res.status(200).json({
             status: "success",
@@ -284,7 +286,7 @@ exports.getDashboardStates = async (req, res) => {
 
         const { id } = req.params
 
-        const states = await service.getDashboardStatesService(id)
+        const states = await dmeService.getDashboardStatesService(id)
 
         res.status(200).json({
             status: "success",
@@ -314,7 +316,7 @@ exports.inviteDoctor = async (req, res) => {
         </a>`
         }
 
-        const invite = await service.inviteEmail(emailBody, email)
+        const invite = await dmeService.inviteEmail(emailBody, email)
 
         return res.status(200).json({
             status: "success",
@@ -341,7 +343,7 @@ exports.inviteTherapist = async (req, res) => {
         </a>`
         }
 
-        const invite = await service.inviteEmail(emailBody, email)
+        const invite = await dmeService.inviteEmail(emailBody, email)
 
         return res.status(200).json({
             status: "success",
@@ -360,17 +362,26 @@ exports.inviteStaff = async (req, res) => {
     try {
         const { dmeSupplierEmail } = req.body
         const { staffEmail } = req.body
-        const token = crypto.randomBytes(64).toString('hex')
-        //inviteToken
 
-        const dme = await service.findDmeByEmail(dmeSupplierEmail);
+        const jwtPlayLoad = {
+            dmeSupplierEmail,
+            staffEmail,
+            invitationFor: "Staff"
+        }
+
+        const token = generateToken(jwtPlayLoad)
+
+
+        const dme = await dmeService.findDmeByEmail(dmeSupplierEmail);
 
         const invitedData = {
             email: staffEmail,
             admin: dme?._id,
             inviteToken: token
         }
-        const invited = await service.inviteStaffService(invitedData)
+        const invited = await dmeService.inviteStaffService(invitedData)
+
+
 
         if (!invited || !dme) {
             return res.status(400).json({
@@ -379,7 +390,7 @@ exports.inviteStaff = async (req, res) => {
             })
         }
 
-        await service.updateDmeService(dme._id, { inviteToken: token })
+        await dmeService.updateDmeService(dme._id, { inviteToken: token })
 
 
         const emailBody = {
@@ -389,7 +400,66 @@ exports.inviteStaff = async (req, res) => {
         <button style="background-color: #008CBA; padding: 10px 24px; border:0px; color:white; cursor:pointer" >Create Account</button>
         </a>`
         }
-        const invite = await service.inviteEmail(emailBody, staffEmail)
+        const invite = await dmeService.inviteEmail(emailBody, staffEmail)
+
+        return res.status(200).json({
+            status: "success",
+            data: invite
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: "fail",
+            data: error.message
+        })
+    }
+
+}
+
+
+exports.inviteVaProsthetics = async (req, res) => {
+    try {
+        const { dmeSupplierEmail } = req.body
+        const { vaProstheticsEmail } = req.body
+
+
+        const dme = await dmeService.findDmeByEmail(dmeSupplierEmail);
+
+        const jwtPlayLoad = {
+            dmeSupplierEmail,
+            vaProstheticsEmail,
+            invitationFor: "VA Prosthetics"
+        }
+
+        const token = generateToken(jwtPlayLoad)
+
+        const invitedData = {
+            email: vaProstheticsEmail,
+            admin: dme?._id,
+            inviteToken: token
+        }
+
+
+
+        const invited = await dmeService.inviteVAProstheticsService(invitedData)
+
+        if (!invited || !dme) {
+            return res.status(400).json({
+                status: "fail",
+                message: "Something went Wrong!"
+            })
+        }
+
+        await dmeService.updateDmeService(dme._id, { inviteToken: token })
+
+
+        const emailBody = {
+            subject: "Invitation from dmedocrx",
+            html: `<h3>You are invited to create an account on dmedocrx</h3> <p>Click bellow button to create Your Account</p> 
+        <a href=${process.env.CLIENT_LINK}/signup?invitationToken=${token}>
+        <button style="background-color: #008CBA; padding: 10px 24px; border:0px; color:white; cursor:pointer" >Create Account</button>
+        </a>`
+        }
+        const invite = await dmeService.inviteEmail(emailBody, vaProstheticsEmail)
 
         return res.status(200).json({
             status: "success",
@@ -411,7 +481,7 @@ exports.addPatientToDoctor = async (req, res) => {
         const { patientUserId } = req.body
         const { doctorUserId } = req.body
 
-        const added = await service.addPatientToDoctorService(patientUserId, doctorUserId)
+        const added = await dmeService.addPatientToDoctorService(patientUserId, doctorUserId)
 
         return res.status(200).json({
             status: "success",
@@ -430,7 +500,7 @@ exports.addPatientToTherapist = async (req, res) => {
         const { patientUserId } = req.body
         const { therapistUserId } = req.body
 
-        const added = await service.addPatientToTherapistService(patientUserId, therapistUserId)
+        const added = await dmeService.addPatientToTherapistService(patientUserId, therapistUserId)
 
         return res.status(200).json({
             status: "success",
@@ -456,7 +526,7 @@ exports.uploadBanner = async (req, res) => {
         const { id } = req.params
         const fileName = path.split('uploads/')[1] + "/" + bannerFileName
 
-        const bannerUploaded = await service.uploadBannerService(id, { banner: fileName })
+        const bannerUploaded = await dmeService.uploadBannerService(id, { banner: fileName })
 
         return res.status(200).json({
             status: "success",
@@ -472,7 +542,7 @@ exports.uploadBanner = async (req, res) => {
 exports.getBanner = async (req, res) => {
     try {
         const { id } = req.params
-        const banner = await service.getBannerService(id)
+        const banner = await dmeService.getBannerService(id)
         return res.status(200).json({
             status: "success",
             data: banner

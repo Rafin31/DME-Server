@@ -4,9 +4,10 @@ const Patient = require("../../model/Patient.model")
 const DME_Supplier = require("../../model/DmeSupplier.model")
 const Staff = require("../../model/Staff.model")
 const Invited_Staff = require("../../model/InvitedStaff.model")
+const Invited_VA_Prosthetics = require("../../model/InvitedVaProsthetics.model")
 const Doctor = require("../../model/Doctor.model")
 const Therapist = require("../../model/Therapist.model")
-const Order = require("../../model/Order.model")
+const EquipmentOrder = require("../../model/EquipmentOrder.model")
 const Notes = require("../../model/Notes.model")
 const Document = require("../../model/Documents.model")
 const { db } = require("../../model/Task.model")
@@ -102,7 +103,7 @@ exports.deleteDocumentsService = async (doc, docId, body) => {
 
         const { orderId } = body
         const docDelete = await Document.deleteOne({ _id: docId })
-        const order = await Order.updateOne({ _id: orderId }, { $pull: { document: docId } })
+        const order = await EquipmentOrder.updateOne({ _id: orderId }, { $pull: { document: docId } })
         return { docDelete, order }
     }
     if (doc === "patient-document") {
@@ -191,7 +192,7 @@ exports.uploadDocumentsService = async (fileName, path, patientId, uploaderId, o
         }
 
         if (path.includes("order-documents")) {
-            await Order.updateOne({ _id: orderId }, { $push: { document: document[0]._id } }).session(session)
+            await EquipmentOrder.updateOne({ _id: orderId }, { $push: { document: document[0]._id } }).session(session)
         }
 
         await session.commitTransaction();
@@ -211,7 +212,7 @@ exports.getDashboardStatesService = async (dmeSupplierId) => {
     try {
         const patient = await Patient.estimatedDocumentCount()
         const doctors = await Doctor.estimatedDocumentCount()
-        const order = await Order.find({ dmeSupplierId: dmeSupplierId })
+        const order = await EquipmentOrder.find({ dmeSupplierId: dmeSupplierId })
         const staff = await Staff.estimatedDocumentCount()
         const therapist = await Therapist.estimatedDocumentCount()
         const orderCount = order.length
@@ -238,6 +239,13 @@ exports.inviteEmail = async (emailBody, email) => {
 exports.inviteStaffService = async (data) => {
 
     const invited = await Invited_Staff.create(data)
+    return invited
+
+}
+
+exports.inviteVAProstheticsService = async (data) => {
+
+    const invited = await Invited_VA_Prosthetics.create(data)
     return invited
 
 }
