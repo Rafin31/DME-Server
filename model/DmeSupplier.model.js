@@ -56,6 +56,10 @@ const dmeSupplierSchema = mongoose.Schema({
         type: [ObjectId],
         ref: "User"
     },
+    va_prosthetics: {
+        type: [ObjectId],
+        ref: "User"
+    },
     inviteToken: {
         type: [String],
         trim: true,

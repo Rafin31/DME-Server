@@ -1,11 +1,11 @@
 const EquipmentOrder = require("../../model/EquipmentOrder.model")
-const Order_Note = require("../../model/OrderNote.model")
+const Equipment_Order_Note = require("../../model/EquipmentOrderNote.model")
 
 exports.createOrderService = async (data) => {
     const order = await EquipmentOrder.create(data)
     let insertNote
     if (data.note) {
-        insertNote = await Order_Note.create({
+        insertNote = await Equipment_Order_Note.create({
             writerId: data.dmeSupplierId,
             orderId: order._id,
             note: data.note
@@ -73,7 +73,7 @@ exports.updateOrderService = async (data, id) => {
     const update = await EquipmentOrder.updateOne({ _id: id }, { $set: data }, { runValidators: true })
     let insertNote
     if (data.note) {
-        insertNote = await Order_Note.create({
+        insertNote = await Equipment_Order_Note.create({
             writerId: data.dmeSupplierId,
             orderId: id,
             note: data.note
@@ -85,7 +85,7 @@ exports.updateOrderService = async (data, id) => {
 
 //motes
 exports.insertOrderNoteService = async (data, orderId) => {
-    let insertNote = await Order_Note.create({
+    let insertNote = await Equipment_Order_Note.create({
         writerId: data.writerId,
         orderId: orderId,
         note: data.note
@@ -97,7 +97,7 @@ exports.insertOrderNoteService = async (data, orderId) => {
 
 
 exports.getNotesByOrderIdService = async (orderId) => {
-    let notes = await Order_Note.find({ orderId: orderId })
+    let notes = await Equipment_Order_Note.find({ orderId: orderId })
         .populate(
             {
                 path: 'writerId', select: "-password",

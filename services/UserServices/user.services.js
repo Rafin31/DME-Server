@@ -3,11 +3,13 @@ const UserStatus = require('../../model/UserStatus.model');
 const UserCategory = require('../../model/UserCategory.model');
 const Patient = require('../../model/Patient.model');
 const Veteran = require('../../model/Veteran.model');
+const VA_Prosthetics = require('../../model/VaProsthetics.model');
 const DME_Supplier = require('../../model/DmeSupplier.model');
 const Doctor = require('../../model/Doctor.model');
 const Therapist = require('../../model/Therapist.model');
 const Staff = require('../../model/Staff.model');
 const Invited_Staff = require("../../model/InvitedStaff.model")
+const Invited_VA_Prosthetics = require("../../model/InvitedVaProsthetics.model")
 const { db } = require('../../model/User.model');
 const bcrypt = require('bcryptjs');
 const { sendMail } = require('../../utils/sentEmail');
@@ -88,6 +90,33 @@ exports.createUserService = async (data) => {
             }
             await Veteran.create([veteranData], { session })
         }
+
+        if (createdUserCategory?.category === "VA Prosthetics") {
+            if (!data.inviteToken) {
+                throw new Error("You are not allowed to signup. Contact with DME-Supplier ")
+            }
+
+            const dmeWithToken = await DME_Supplier.findOne({ inviteToken: data.inviteToken })
+                .populate({ path: "userId", select: "_id" })
+
+            if (!dmeWithToken) {
+                throw new Error("You are not allowed to signup. Contact with your DME-Supplier ")
+            }
+
+            const vaProstheticsData = {
+                userId: createdUser[0]?._id,
+                phoneNumber: data?.phoneNumber,
+                admin: dmeWithToken.userId._id
+            }
+
+            await VA_Prosthetics.create([vaProstheticsData], { session })
+            await Invited_VA_Prosthetics.deleteOne({ inviteToken: data.inviteToken })
+
+            dmeWithToken.va_prosthetics.push(createdUser[0]?._id)
+            dmeWithToken.inviteToken.pull(data.inviteToken)
+            dmeWithToken.save({ validateModifiedOnly: true })
+        }
+
         if (createdUserCategory?.category === "Patient") {
             const patientData = {
                 userId: createdUser[0]?._id,
@@ -302,7 +331,6 @@ exports.findUserByIdService = async (id) => {
         throw new Error("User not found!")
     }
 
-
     if (user.userCategory.category === "DME-Supplier") {
         const details = await DME_Supplier.findOne({ userId: user._id })
             .populate({ path: "staff", select: "_id email " })
@@ -329,6 +357,14 @@ exports.findUserByIdService = async (id) => {
     if (user.userCategory.category === "Veteran") {
         const details = await Veteran
             .findOne({ userId: user._id })
+            .select('-_id -userId -updatedAt -createdAt -__v')
+        user = { ...user, details }
+    }
+
+    if (user.userCategory.category === "VA Prosthetics") {
+        const details = await VA_Prosthetics
+            .findOne({ userId: user._id })
+            .populate({ path: "admin", select: "_id userId email " })
             .select('-_id -userId -updatedAt -createdAt -__v')
         user = { ...user, details }
     }

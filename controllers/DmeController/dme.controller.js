@@ -358,6 +358,7 @@ exports.inviteTherapist = async (req, res) => {
     }
 }
 
+
 exports.inviteStaff = async (req, res) => {
     try {
         const { dmeSupplierEmail } = req.body
@@ -414,7 +415,6 @@ exports.inviteStaff = async (req, res) => {
     }
 
 }
-
 
 exports.inviteVaProsthetics = async (req, res) => {
     try {

@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Schema.Types
 
 
-const EquipmentOrderSchema = mongoose.Schema({
+const RepairOrderSchema = mongoose.Schema({
 
-    dmeSupplierId: {
+    creatorId: {
         type: ObjectId,
         ref: "User",
-        required: ['true', "DME Supplier Id is missing"]
+        required: ['true', "Creator Id Id is missing"]
     },
     patientId: {
         type: ObjectId,
@@ -20,7 +20,7 @@ const EquipmentOrderSchema = mongoose.Schema({
     },
     notes: {
         type: ObjectId,
-        ref: "Equipment_Order_Note"
+        ref: "Repair_Order_Note"
     },
     document: {
         type: [ObjectId],
@@ -30,7 +30,8 @@ const EquipmentOrderSchema = mongoose.Schema({
         type: String,
         required: ['true', "Order Status is missing"],
         enum: {
-            values: ["Pending", "Cancelled", "New-Referral", "Evaluation", "Evaluation-Completed", "Paper-Work-In-Process", "Prior-Auth-Status", "Prior-Auth-Receive", "Holding-RTO", "RTO", "Delivered", "Authorization-Expiration-F/U", "Order-Request", "Archived"],
+            values: ["Pending", "Cancelled", "PRR", "Pending-Rx", "Pending-Assess", "Workup", "Pa-Status",
+                "RTO-Status", "Pending-Parts", "Pending-Scheduling", "Completed", "Archived"],
             message: "{VALUE} is not a Order Status"
         }
     },
@@ -38,8 +39,8 @@ const EquipmentOrderSchema = mongoose.Schema({
     { timestamps: true }
 )
 
-const EquipmentOrder = mongoose.model("Equipment_Order", EquipmentOrderSchema)
+const RepairOrder = mongoose.model("Repair_Order", RepairOrderSchema)
 
 
-module.exports = EquipmentOrder;
+module.exports = RepairOrder;
 

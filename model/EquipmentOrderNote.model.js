@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Schema.Types
 
 
-const orderNotesSchema = mongoose.Schema({
+const EquipmentOrderNoteSchema = mongoose.Schema({
 
     writerId: {
         type: ObjectId,
@@ -23,8 +23,8 @@ const orderNotesSchema = mongoose.Schema({
     { timestamps: true }
 )
 
-const Order_Note = mongoose.model("Order_Note", orderNotesSchema)
+const Equipment_Order_Note = mongoose.model("Equipment_Order_Note", EquipmentOrderNoteSchema)
 
 
-module.exports = Order_Note;
+module.exports = Equipment_Order_Note;
 
