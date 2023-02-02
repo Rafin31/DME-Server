@@ -3,8 +3,28 @@ const router = express.Router()
 const repairOrderController = require('../../controllers/RepairOrderController/repairOrder.controller')
 
 
+//repair-order
+
 router.route('/')
     .post(repairOrderController.createRepairOrder)
+    .get(repairOrderController.getAllRepairOrder)
+
+router.route('/byStatus')
+    .get(repairOrderController.getRepairOrderByStatus)
+
+
+router.route('/dme-supplier/:id')
+    .get(repairOrderController.getRepairOrderByDMESupplier)
+
+router.route('/patient/:id')
+    .get(repairOrderController.getRepairOrderByPatient)
+
+router.route('/repair-order-note/:id')
+    .get(repairOrderController.getNotesByRepairOrderId)
+
+router.route('/:id')
+    .get(repairOrderController.getRepairOrderById)
+    .patch(repairOrderController.updateRepairOrder)
 
 
 module.exports = router

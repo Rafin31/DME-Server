@@ -21,7 +21,13 @@ exports.getAllOrderService = async () => {
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "patientId", select: "_id fullName email" })
-        .populate({ path: "notes" })
+        .populate({
+            path: "notes",
+            populate: {
+                path: 'writerId',
+                select: "_id fullName email"
+            }
+        })
         .select('-__v -createdAt -updatedAt')
 
     return orders
@@ -83,7 +89,7 @@ exports.updateOrderService = async (data, id) => {
     return update
 }
 
-//motes
+//notes
 exports.insertOrderNoteService = async (data, orderId) => {
     let insertNote = await Equipment_Order_Note.create({
         writerId: data.writerId,
