@@ -8,6 +8,8 @@ const Invited_VA_Prosthetics = require("../../model/InvitedVaProsthetics.model")
 const Doctor = require("../../model/Doctor.model")
 const Therapist = require("../../model/Therapist.model")
 const EquipmentOrder = require("../../model/EquipmentOrder.model")
+const RepairOrder = require("../../model/RepairOrder.model")
+const VeteranOrder = require("../../model/VeteranOrder.model")
 const Notes = require("../../model/Notes.model")
 const Document = require("../../model/Documents.model")
 const { db } = require("../../model/Task.model")
@@ -177,13 +179,15 @@ exports.deleteNotesService = async (id) => {
 }
 
 //upload document
-exports.uploadDocumentsService = async (fileName, path, patientId, uploaderId, orderId = '') => {
+exports.uploadDocumentsService = async (fileName, path, patientId, uploaderId, title, description, orderId = '') => {
     const session = await db.startSession()
     try {
         session.startTransaction();
         const documentObject = {
             uploaderId: uploaderId,
             document: fileName,
+            title,
+            description
         }
         const document = await Document.create([documentObject], { session })
 
@@ -207,16 +211,26 @@ exports.uploadDocumentsService = async (fileName, path, patientId, uploaderId, o
 }
 
 //dashboard
-exports.getDashboardStatesService = async (dmeSupplierId) => {
+exports.getDashboardStatesService = async (userId) => {
 
     try {
         const patient = await Patient.estimatedDocumentCount()
         const doctors = await Doctor.estimatedDocumentCount()
-        const order = await EquipmentOrder.find({ dmeSupplierId: dmeSupplierId })
+        const equipMentOrderTotal = await EquipmentOrder.find({ $and: [{ dmeSupplierId: userId }, { status: { $ne: "Archived" } }] })
+        const equipMentOrder = await EquipmentOrder.find({ $and: [{ dmeSupplierId: userId }, { status: "New-Referral" }] })
+
+        const repairOrder = await RepairOrder.find({ $and: [{ creatorId: userId }, { status: { $ne: "Archived" } }] })
+        const veteranOrder = await VeteranOrder.find({ $and: [{ creatorId: userId }, { status: { $ne: "Archived" } }] })
         const staff = await Staff.estimatedDocumentCount()
         const therapist = await Therapist.estimatedDocumentCount()
-        const orderCount = order.length
-        return { patient, doctors, orderCount, therapist, staff }
+
+        const equipmentOrderNewReferralCount = equipMentOrder.length
+        const equipmentOrderTotalCount = equipMentOrderTotal.length
+        const repairOrderCount = repairOrder.length
+        const veteranOrderCount = veteranOrder.length
+
+        return { patient, doctors, equipmentOrderNewReferralCount, repairOrderCount, veteranOrderCount, equipmentOrderTotalCount, therapist, staff }
+
     } catch (error) {
         throw new Error(error)
     }

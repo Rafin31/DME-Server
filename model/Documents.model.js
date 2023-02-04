@@ -9,15 +9,20 @@ const documentSchema = mongoose.Schema({
         ref: "User",
         required: ['true', "Uploader Id  is missing"]
     },
+    title: {
+        type: String,
+        trim: true,
+    },
+    description: {
+        type: String,
+        trim: true,
+    },
     document: {
         type: String,
         trim: true,
         required: ['true', "Document is missing"]
-    },
-    note: {
-        type: String,
-        trim: true,
-    },
+    }
+
 },
     { timestamps: true }
 )

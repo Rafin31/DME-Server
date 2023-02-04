@@ -223,12 +223,12 @@ exports.uploadDocuments = async (req, res) => {
     try {
         const documentFileName = req.file.filename
         const path = req.file.destination
-        const { uploaderId } = req.body
+        const { uploaderId, title, description } = req.body
         const { id: patientId } = req.params
         const fileName = path.split('uploads/')[1] + "/" + documentFileName
         const orderId = req.body.orderId || ""
 
-        await dmeService.uploadDocumentsService(fileName, path, patientId, uploaderId, orderId)
+        await dmeService.uploadDocumentsService(fileName, path, patientId, uploaderId, title, description, orderId)
 
         return res.status(200).json({
             status: "Success",

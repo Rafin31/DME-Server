@@ -12,6 +12,7 @@ const doctorRouter = require('./routes/v1/doctor.route');
 const therapistRouter = require('./routes/v1/therapist.route');
 const staffRouter = require('./routes/v1/staff.route');
 const veteranRouter = require('./routes/v1/veteran.route');
+const privateMessageRouter = require('./routes/v1/privateMessage.route');
 
 //routes
 app.use('/api/v1/users', userRoutes) //  user route 
@@ -24,6 +25,7 @@ app.use('/api/v1/doctor', doctorRouter) //  doctor route
 app.use('/api/v1/therapist', therapistRouter) //  therapist route 
 app.use('/api/v1/staff', staffRouter) //  staff route 
 app.use('/api/v1/veteran', veteranRouter) //  veteran route 
+app.use('/api/v1/private-message', privateMessageRouter) //  private-message route 
 
 
 app.all("*", (req, res) => {

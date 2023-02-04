@@ -18,6 +18,10 @@ const EquipmentOrderSchema = mongoose.Schema({
         type: String,
         trim: true
     },
+    progress: {
+        type: String,
+        trim: true
+    },
     notes: {
         type: ObjectId,
         ref: "Equipment_Order_Note"
