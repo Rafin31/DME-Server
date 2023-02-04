@@ -214,22 +214,24 @@ exports.uploadDocumentsService = async (fileName, path, patientId, uploaderId, t
 exports.getDashboardStatesService = async (userId) => {
 
     try {
-        const patient = await Patient.estimatedDocumentCount()
-        const doctors = await Doctor.estimatedDocumentCount()
+        // const patient = await Patient.estimatedDocumentCount()
+        // const doctors = await Doctor.estimatedDocumentCount()
+        // const staff = await Staff.estimatedDocumentCount()
+        // const therapist = await Therapist.estimatedDocumentCount()
+
         const equipMentOrderTotal = await EquipmentOrder.find({ $and: [{ dmeSupplierId: userId }, { status: { $ne: "Archived" } }] })
         const equipMentOrder = await EquipmentOrder.find({ $and: [{ dmeSupplierId: userId }, { status: "New-Referral" }] })
 
         const repairOrder = await RepairOrder.find({ $and: [{ creatorId: userId }, { status: { $ne: "Archived" } }] })
         const veteranOrder = await VeteranOrder.find({ $and: [{ creatorId: userId }, { status: { $ne: "Archived" } }] })
-        const staff = await Staff.estimatedDocumentCount()
-        const therapist = await Therapist.estimatedDocumentCount()
+
 
         const equipmentOrderNewReferralCount = equipMentOrder.length
         const equipmentOrderTotalCount = equipMentOrderTotal.length
         const repairOrderCount = repairOrder.length
         const veteranOrderCount = veteranOrder.length
 
-        return { patient, doctors, equipmentOrderNewReferralCount, repairOrderCount, veteranOrderCount, equipmentOrderTotalCount, therapist, staff }
+        return { equipmentOrderNewReferralCount, repairOrderCount, veteranOrderCount, equipmentOrderTotalCount }
 
     } catch (error) {
         throw new Error(error)
