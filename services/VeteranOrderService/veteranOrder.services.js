@@ -8,7 +8,7 @@ exports.createVeteranOrderService = async (data) => {
     let insertNote
     if (data.note) {
         insertNote = await Veteran_Order_Note.create({
-            writerId: data.creatorId,
+            writerId: data.dmeSupplierId,
             orderId: veteranOrder._id,
             note: data.note
         })
@@ -24,7 +24,7 @@ exports.getAllVeteranOrderService = async () => {
 
     const veteranOrder = await VeteranOrder.find({})
         .lean()
-        .populate({ path: "creatorId", select: "_id fullName email" })
+        .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "veteranId", select: "_id fullName email" })
         .populate({
             path: "notes",
@@ -43,7 +43,7 @@ exports.getVeteranOrderbyIdService = async (id) => {
 
     const veteranOrder = await VeteranOrder.find({ _id: id })
         .lean()
-        .populate({ path: "creatorId", select: "fullName email" })
+        .populate({ path: "dmeSupplierId", select: "fullName email" })
         .populate({ path: "veteranId", select: "fullName email" })
         .populate({
             path: "notes",
@@ -60,10 +60,10 @@ exports.getVeteranOrderbyIdService = async (id) => {
 
 
 exports.getVeteranOrderByCreatorIdService = async (id) => {
-    const order = await VeteranOrder.find({ creatorId: id })
+    const order = await VeteranOrder.find({ dmeSupplierId: id })
         .lean()
-        .populate({ path: "creatorId", select: "_id fullName email" })
-        .populate({ path: "veteranId", select: "_id fullName email" })
+        .populate({ path: "dmeSupplierId", select: "_id fullName email" })
+        .populate({ path: "veteranId", select: "_id firstName lastName  fullName email" })
         .populate({
             path: "notes",
             populate: {
@@ -71,7 +71,7 @@ exports.getVeteranOrderByCreatorIdService = async (id) => {
                 select: "_id fullName email"
             }
         })
-        .select('-__v -createdAt -updatedAt')
+        .select('-__v -updatedAt')
 
     return order
 }
@@ -79,7 +79,7 @@ exports.getVeteranOrderByCreatorIdService = async (id) => {
 exports.getVeteranOrderByVeteranService = async (id) => {
     const order = await VeteranOrder.find({ veteranId: id })
         .lean()
-        .populate({ path: "creatorId", select: "_id fullName email" })
+        .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "veteranId", select: "_id fullName email" })
         .populate({
             path: "notes",
@@ -99,7 +99,7 @@ exports.updateVeteranOrderService = async (data, id) => {
     let insertNote
     if (data.note) {
         insertNote = await Veteran_Order_Note.create({
-            writerId: data.creatorId,
+            writerId: data.dmeSupplierId,
             orderId: id,
             note: data.note
         })
@@ -131,7 +131,7 @@ exports.getVeteranOrderNoteByIdService = async (orderId) => {
 exports.getVeteranOrderByStatusService = async (status) => {
     const order = await VeteranOrder.find({ status: status })
         .lean()
-        .populate({ path: "creatorId", select: "_id fullName email" })
+        .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "veteranId", select: "_id fullName email" })
         .populate({
             path: "notes",

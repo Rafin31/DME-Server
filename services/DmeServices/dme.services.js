@@ -179,7 +179,7 @@ exports.deleteNotesService = async (id) => {
 }
 
 //upload document
-exports.uploadDocumentsService = async (fileName, path, patientId, uploaderId, title, description, orderId = '') => {
+exports.uploadDocumentsService = async (fileName, path, patientId, uploaderId, title, description, orderCategory, orderId = '') => {
     const session = await db.startSession()
     try {
         session.startTransaction();
@@ -195,8 +195,14 @@ exports.uploadDocumentsService = async (fileName, path, patientId, uploaderId, t
             await Patient.updateOne({ userId: patientId }, { $push: { document: document[0]._id } }).session(session)
         }
 
-        if (path.includes("order-documents")) {
+        if (path.includes("order-documents") && orderCategory === "equipment-order") {
             await EquipmentOrder.updateOne({ _id: orderId }, { $push: { document: document[0]._id } }).session(session)
+        }
+        if (path.includes("order-documents") && orderCategory === "repair-order") {
+            await RepairOrder.updateOne({ _id: orderId }, { $push: { document: document[0]._id } }).session(session)
+        }
+        if (path.includes("order-documents") && orderCategory === "veteran-order") {
+            await VeteranOrder.updateOne({ _id: orderId }, { $push: { document: document[0]._id } }).session(session)
         }
 
         await session.commitTransaction();
@@ -222,8 +228,8 @@ exports.getDashboardStatesService = async (userId) => {
         const equipMentOrderTotal = await EquipmentOrder.find({ $and: [{ dmeSupplierId: userId }, { status: { $ne: "Archived" } }] })
         const equipMentOrder = await EquipmentOrder.find({ $and: [{ dmeSupplierId: userId }, { status: "New-Referral" }] })
 
-        const repairOrder = await RepairOrder.find({ $and: [{ creatorId: userId }, { status: { $ne: "Archived" } }] })
-        const veteranOrder = await VeteranOrder.find({ $and: [{ creatorId: userId }, { status: { $ne: "Archived" } }] })
+        const repairOrder = await RepairOrder.find({ $and: [{ dmeSupplierId: userId }, { status: { $ne: "Archived" } }] })
+        const veteranOrder = await VeteranOrder.find({ $and: [{ dmeSupplierId: userId }, { status: { $ne: "Archived" } }] })
 
 
         const equipmentOrderNewReferralCount = equipMentOrder.length

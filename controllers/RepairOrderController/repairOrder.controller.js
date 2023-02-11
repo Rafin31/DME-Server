@@ -40,13 +40,6 @@ exports.getRepairOrderById = async (req, res) => {
         const { id } = req.params
         const repairOrder = await repairOrderService.getRepairOrderbyIdService(id)
 
-        if (!repairOrder) {
-            return res.status(401).json({
-                status: 'success',
-                data: "No order found!"
-            })
-        }
-
         return res.status(200).json({
             status: 'success',
             data: repairOrder
@@ -65,7 +58,7 @@ exports.getRepairOrderByDMESupplier = async (req, res) => {
         const repairOrder = await repairOrderService.getRepairOrderByDmeSupplierService(id)
 
         if (!repairOrder || repairOrder.length === 0) {
-            return res.status(401).json({
+            return res.status(200).json({
                 status: 'success',
                 data: "No order found!"
             })
@@ -89,7 +82,7 @@ exports.getRepairOrderByPatient = async (req, res) => {
         const repairOrder = await repairOrderService.getRepairOrderByDmePatientService(id)
 
         if (!repairOrder || repairOrder.length === 0) {
-            return res.status(401).json({
+            return res.status(200).json({
                 status: 'success',
                 data: "No order found!"
             })
@@ -138,12 +131,7 @@ exports.getNotesByRepairOrderId = async (req, res) => {
         const { id } = req.params
         const notes = await repairOrderService.getRepairOrderNoteByIdService(id)
 
-        if (!notes || notes.length === 0) {
-            return res.status(400).json({
-                status: 'fail',
-                data: "No notes for this order!"
-            })
-        }
+
 
         return res.status(200).json({
             status: 'success',
@@ -163,7 +151,7 @@ exports.getRepairOrderByStatus = async (req, res) => {
         const order = await repairOrderService.getRepairOrderByStatusService(status)
 
         if (order.length === 0) {
-            return res.status(401).json({
+            return res.status(200).json({
                 status: 'fail',
                 data: "No order found!"
             })

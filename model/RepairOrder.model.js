@@ -4,10 +4,10 @@ const { ObjectId } = mongoose.Schema.Types
 
 const RepairOrderSchema = mongoose.Schema({
 
-    creatorId: {
+    dmeSupplierId: {
         type: ObjectId,
         ref: "User",
-        required: ['true', "Creator Id Id is missing"]
+        required: ['true', "DME Supplier Id Id is missing"]
     },
     patientId: {
         type: ObjectId,

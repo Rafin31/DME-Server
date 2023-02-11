@@ -9,7 +9,7 @@ exports.createRepairOrderService = async (data) => {
     let insertNote
     if (data.note) {
         insertNote = await Repair_Order_Note.create({
-            writerId: data.creatorId,
+            writerId: data.dmeSupplierId,
             orderId: repairOrder._id,
             note: data.note
         })
@@ -24,7 +24,7 @@ exports.createRepairOrderService = async (data) => {
 exports.getAllRepairOrderService = async () => {
     const repairOrder = await RepairOrder.find({})
         .lean()
-        .populate({ path: "creatorId", select: "_id fullName email" })
+        .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "patientId", select: "_id fullName email" })
         .populate({
             path: "notes",
@@ -41,7 +41,7 @@ exports.getAllRepairOrderService = async () => {
 exports.getRepairOrderbyIdService = async (id) => {
     const repairOrder = await RepairOrder.findById(id)
         .lean()
-        .populate({ path: "creatorId", select: "fullName email" })
+        .populate({ path: "dmeSupplierId", select: "fullName email" })
         .populate({ path: "patientId", select: "fullName email" })
         .populate({
             path: "notes",
@@ -57,9 +57,9 @@ exports.getRepairOrderbyIdService = async (id) => {
 }
 
 exports.getRepairOrderByDmeSupplierService = async (id) => {
-    const order = await RepairOrder.find({ creatorId: id })
+    const order = await RepairOrder.find({ dmeSupplierId: id })
         .lean()
-        .populate({ path: "creatorId", select: "_id fullName email" })
+        .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "patientId", select: "_id fullName email" })
         .populate({
             path: "notes",
@@ -68,7 +68,7 @@ exports.getRepairOrderByDmeSupplierService = async (id) => {
                 select: "_id fullName email"
             }
         })
-        .select('-__v -createdAt -updatedAt')
+        .select('-__v -updatedAt')
 
     return order
 }
@@ -76,7 +76,7 @@ exports.getRepairOrderByDmeSupplierService = async (id) => {
 exports.getRepairOrderByDmePatientService = async (id) => {
     const order = await RepairOrder.find({ patientId: id })
         .lean()
-        .populate({ path: "creatorId", select: "_id fullName email" })
+        .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "patientId", select: "_id fullName email" })
         .populate({
             path: "notes",
@@ -97,7 +97,7 @@ exports.updateRepairOrderService = async (data, id) => {
     let insertNote
     if (data.note) {
         insertNote = await Repair_Order_Note.create({
-            writerId: data.creatorId,
+            writerId: data.dmeSupplierId,
             orderId: id,
             note: data.note
         })
@@ -129,7 +129,7 @@ exports.getRepairOrderNoteByIdService = async (orderId) => {
 exports.getRepairOrderByStatusService = async (status) => {
     const order = await RepairOrder.find({ status: status })
         .lean()
-        .populate({ path: "creatorId", select: "_id fullName email" })
+        .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "patientId", select: "_id fullName email" })
         .populate({
             path: "notes",

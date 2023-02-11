@@ -4,7 +4,7 @@ const { ObjectId } = mongoose.Schema.Types
 
 const VeteranOrderSchema = mongoose.Schema({
 
-    creatorId: {
+    dmeSupplierId: {
         type: ObjectId,
         ref: "User",
         required: ['true', "Creator Id is missing"]
@@ -15,6 +15,14 @@ const VeteranOrderSchema = mongoose.Schema({
         required: ['true', "Patient Id is missing"]
     },
     description: {
+        type: String,
+        trim: true
+    },
+    partsPo: {
+        type: String,
+        trim: true
+    },
+    labourPo: {
         type: String,
         trim: true
     },
@@ -34,7 +42,7 @@ const VeteranOrderSchema = mongoose.Schema({
         type: String,
         trim: true
     },
-    scheduled: {
+    schedule: {
         type: String,
         trim: true
     },

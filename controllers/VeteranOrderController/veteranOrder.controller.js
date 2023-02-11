@@ -40,7 +40,7 @@ exports.getVeteranOrderById = async (req, res) => {
         const veteranOrder = await veteranOrderService.getVeteranOrderbyIdService(id)
 
         if (!veteranOrder || veteranOrder.length === 0) {
-            return res.status(401).json({
+            return res.status(200).json({
                 status: 'success',
                 data: "No order found!"
             })
@@ -64,7 +64,7 @@ exports.getVeteranOrderByCreatorId = async (req, res) => {
         const veteranOrder = await veteranOrderService.getVeteranOrderByCreatorIdService(id)
 
         if (!veteranOrder || veteranOrder.length === 0) {
-            return res.status(401).json({
+            return res.status(200).json({
                 status: 'success',
                 data: "No order found!"
             })
@@ -88,7 +88,7 @@ exports.getVeteranOrderByPatient = async (req, res) => {
         const repairOrder = await veteranOrderService.getVeteranOrderByVeteranService(id)
 
         if (!repairOrder || repairOrder.length === 0) {
-            return res.status(401).json({
+            return res.status(200).json({
                 status: 'success',
                 data: "No order found!"
             })
@@ -135,13 +135,6 @@ exports.getNotesByVeteranOrderId = async (req, res) => {
         const { id } = req.params
         const notes = await veteranOrderService.getVeteranOrderNoteByIdService(id)
 
-        if (!notes || notes.length === 0) {
-            return res.status(400).json({
-                status: 'fail',
-                data: "No notes for this order!"
-            })
-        }
-
         return res.status(200).json({
             status: 'success',
             data: notes
@@ -158,13 +151,6 @@ exports.getVeteranOrderByStatus = async (req, res) => {
     try {
         const { status } = req.body
         const order = await veteranOrderService.getVeteranOrderByStatusService(status)
-
-        if (order.length === 0) {
-            return res.status(401).json({
-                status: 'fail',
-                data: "No order found!"
-            })
-        }
 
         return res.status(200).json({
             status: 'success',

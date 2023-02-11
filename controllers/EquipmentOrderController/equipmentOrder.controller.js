@@ -108,12 +108,6 @@ exports.getOrderById = async (req, res) => {
         const { id } = req.params
         const order = await orderService.getOrderByIdService(id)
 
-        if (!order) {
-            return res.status(401).json({
-                status: 'fail',
-                data: "No order found!"
-            })
-        }
 
         return res.status(200).json({
             status: 'success',
@@ -184,12 +178,6 @@ exports.getNotesByOrderId = async (req, res) => {
         const { id } = req.params
         const notes = await orderService.getNotesByOrderIdService(id)
 
-        if (!notes) {
-            return res.status(400).json({
-                status: 'fail',
-                data: "No notes for this order!"
-            })
-        }
 
         return res.status(200).json({
             status: 'success',

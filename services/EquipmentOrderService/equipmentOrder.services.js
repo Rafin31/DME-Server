@@ -51,7 +51,7 @@ exports.getOrderByDmeSupplierService = async (id) => {
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "patientId", select: "_id fullName email" })
         .populate({ path: "notes", select: "-updatedAt -__v" })
-        .select('-__v -createdAt -updatedAt')
+        .select('-__v -updatedAt')
 
     return order
 }
@@ -69,7 +69,7 @@ exports.getOrderByStatusService = async (status) => {
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "patientId", select: "_id fullName email" })
-        .select('-__v -createdAt -updatedAt')
+        .select('-__v -updatedAt')
 
     return order
 }
