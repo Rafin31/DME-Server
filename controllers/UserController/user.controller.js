@@ -166,7 +166,6 @@ exports.importPatient = async (req, res) => {
             data: patients
         })
     } catch (error) {
-        console.log(error);
         res.status(400).json({
             status: "failed",
             message: error?.message

@@ -100,7 +100,7 @@ exports.createUserService = async (data) => {
                 .populate({ path: "userId", select: "_id" })
 
             if (!dmeWithToken) {
-                throw new Error("You are not allowed to signup. Contact with your DME-Supplier ")
+                throw new Error("You are not allowed to signup. Contact with your DME-Supplier")
             }
 
             const vaProstheticsData = {
@@ -225,6 +225,12 @@ exports.updateUserService = async (id, data) => {
         }
         if (userCategory.category === "Staff") {
             await Staff.updateOne({ userId: user._id }, { $set: data }, { runValidators: true }).session(session)
+        }
+        if (userCategory.category === "Veteran") {
+            await Veteran.updateOne({ userId: user._id }, { $set: data }, { runValidators: true }).session(session)
+        }
+        if (userCategory.category === "VA Prosthetics") {
+            await VA_Prosthetics.updateOne({ userId: user._id }, { $set: data }, { runValidators: true }).session(session)
         }
 
         await session.commitTransaction();

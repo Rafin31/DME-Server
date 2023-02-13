@@ -17,7 +17,6 @@ router.route("/delete-registered-staff/:id")
     .delete(staffController.deleteRegisteredStaff)
 
 
-
 module.exports = router
 
 

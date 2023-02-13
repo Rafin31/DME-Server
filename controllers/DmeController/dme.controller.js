@@ -260,12 +260,10 @@ exports.getDocuments = async (req, res) => {
 exports.deleteDocuments = async (req, res) => {
     try {
 
-        const { document } = req.query
+        const { document, orderCategory } = req.query
         const { id: docId } = req.params
 
-
-
-        const deleteDoc = await dmeService.deleteDocumentsService(document, docId, req.body)
+        const deleteDoc = await dmeService.deleteDocumentsService(document, orderCategory, docId, req.body)
 
         return res.status(200).json({
             status: "success",
@@ -366,7 +364,7 @@ exports.inviteStaff = async (req, res) => {
 
         const jwtPlayLoad = {
             dmeSupplierEmail,
-            staffEmail,
+            invitedEmail: staffEmail,
             invitationFor: "Staff"
         }
 
@@ -426,8 +424,8 @@ exports.inviteVaProsthetics = async (req, res) => {
 
         const jwtPlayLoad = {
             dmeSupplierEmail,
-            vaProstheticsEmail,
-            invitationFor: "VA Prosthetics"
+            invitedEmail: vaProstheticsEmail,
+            invitationFor: "va-prosthetics"
         }
 
         const token = generateToken(jwtPlayLoad)

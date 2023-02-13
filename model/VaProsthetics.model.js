@@ -14,7 +14,7 @@ const vaProstheticsSchema = mongoose.Schema({
         trim: true,
     },
     admin: {
-        type: ObjectId,
+        type: [ObjectId],
         ref: "User",
         required: [true, "admin is required"]
     },

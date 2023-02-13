@@ -1,11 +1,10 @@
-const staffService = require('../../services/StaffServices/staff.services');
+const VAProstheticService = require('../../services/VaProstheticsService/VaProsthetic.services');
 
-exports.getAllStaff = async (req, res) => {
+exports.getAllVAStaff = async (req, res) => {
     try {
+        const va_staff = await VAProstheticService.getAllVAService()
 
-        const staff = await staffService.getAllStaffService()
-
-        if (staff.length === 0) {
+        if (va_staff.length === 0) {
             return res.status(200).json({
                 status: 'success',
                 data: []
@@ -13,8 +12,8 @@ exports.getAllStaff = async (req, res) => {
         }
 
         return res.status(200).json({
-            status: 'success-staff',
-            data: staff
+            status: 'success-va_staff',
+            data: va_staff
         })
     } catch (error) {
         return res.status(400).json({
@@ -24,13 +23,13 @@ exports.getAllStaff = async (req, res) => {
     }
 }
 
-exports.invitedStaff = async (req, res) => {
+exports.invitedVAStaff = async (req, res) => {
     try {
         const { id } = req.params
 
-        const invitedStaff = await staffService.getAllInvitedStaffService(id)
+        const invited_va_staff = await VAProstheticService.getAllInvitedVAService(id)
 
-        if (!invitedStaff) {
+        if (!invited_va_staff) {
             return res.status(200).json({
                 status: 'success',
                 data: []
@@ -39,7 +38,7 @@ exports.invitedStaff = async (req, res) => {
 
         return res.status(200).json({
             status: 'success',
-            data: invitedStaff
+            data: invited_va_staff
         })
     } catch (error) {
         return res.status(400).json({
@@ -49,11 +48,11 @@ exports.invitedStaff = async (req, res) => {
     }
 }
 
-exports.deleteInvitedStaff = async (req, res) => {
+exports.deleteInvitedVAStaff = async (req, res) => {
     try {
         const { token } = req.params
 
-        const deleted = await staffService.deleteInvitedStaffService(token)
+        const deleted = await VAProstheticService.deleteInvitedVAService(token)
 
         return res.status(200).json({
             status: 'success',
@@ -67,11 +66,11 @@ exports.deleteInvitedStaff = async (req, res) => {
     }
 }
 
-exports.deleteRegisteredStaff = async (req, res) => {
+exports.deleteRegisteredVAStaff = async (req, res) => {
     try {
         const { id } = req.params
 
-        const deleted = await staffService.deleteRegisteredStaffService(id)
+        const deleted = await VAProstheticService.deleteRegisteredVAService(id)
 
         return res.status(200).json({
             status: 'success',

@@ -22,7 +22,6 @@ exports.getMessageBySender = async (req, res) => {
         const message = await privateMessageService.getMessageBySenderService(id)
 
         if (!message || message.length === 0) {
-            console.log("test")
             return res.status(200).json({
                 status: 'success',
                 data: "No messages found!"

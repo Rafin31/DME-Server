@@ -99,14 +99,24 @@ exports.getTaskByIdService = async (id) => {
     return task
 }
 
-exports.deleteDocumentsService = async (doc, docId, body) => {
+exports.deleteDocumentsService = async (doc, orderCategory, docId, body) => {
 
     if (doc === "order-documents") {
 
         const { orderId } = body
         const docDelete = await Document.deleteOne({ _id: docId })
-        const order = await EquipmentOrder.updateOne({ _id: orderId }, { $pull: { document: docId } })
-        return { docDelete, order }
+
+        if (orderCategory === "equipment-order") {
+            const order = await EquipmentOrder.updateOne({ _id: orderId }, { $pull: { document: docId } })
+            return { docDelete, order }
+        } else if (orderCategory === "repair-order") {
+            const order = await RepairOrder.updateOne({ _id: orderId }, { $pull: { document: docId } })
+            return { docDelete, order }
+        } else if (orderCategory === "veteran-order") {
+            const order = await VeteranOrder.updateOne({ _id: orderId }, { $pull: { document: docId } })
+            return { docDelete, order }
+        }
+
     }
     if (doc === "patient-document") {
         const { patientId } = body
