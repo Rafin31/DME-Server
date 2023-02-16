@@ -18,6 +18,7 @@ exports.getAllVeteranService = async () => {
                 ],
                 select: "-password -updatedAt -createdAt -__v"
             })
+        .populate({ path: "assignedVaProsthetic", select: "fullName" })
         .select('-__v -createdAt -updatedAt')
 
 

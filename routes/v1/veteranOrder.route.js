@@ -12,6 +12,8 @@ router.route('/')
 router.route('/byStatus')
     .get(veteranOrderController.getVeteranOrderByStatus)
 
+router.route('/archive-orders/:id')
+    .get(veteranOrderController.getArchiveVeteranOrder)
 
 router.route('/veteran-order-note/:id')
     .get(veteranOrderController.getNotesByVeteranOrderId)

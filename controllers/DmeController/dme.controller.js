@@ -2,6 +2,7 @@ const dmeService = require('../../services/DmeServices/dme.services')
 
 const crypto = require('crypto');
 const { generateToken } = require('../../utils/generateInviteToken');
+const multer = require('multer');
 
 exports.addTask = async (req, res) => {
     try {
@@ -220,6 +221,7 @@ exports.deleteNotes = async (req, res) => {
 //upload document 
 
 exports.uploadDocuments = async (req, res) => {
+
     try {
         const documentFileName = req.file.filename
         const path = req.file.destination
@@ -512,8 +514,25 @@ exports.addPatientToTherapist = async (req, res) => {
         })
     }
 }
+exports.addVaToVeteran = async (req, res) => {
+    try {
+        const { veteranId } = req.body
+        const { vaProstheticId } = req.body
 
+        const added = await dmeService.addVaToVeteranService(veteranId, vaProstheticId)
 
+        return res.status(200).json({
+            status: "success",
+            data: added
+        })
+
+    } catch (error) {
+        return res.status(400).json({
+            status: "fail",
+            data: error.message
+        })
+    }
+}
 
 // Banner
 exports.uploadBanner = async (req, res) => {

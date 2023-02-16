@@ -1,4 +1,5 @@
 const veteranOrderService = require('../../services/VeteranOrderService/veteranOrder.services')
+const userService = require('../../services/UserServices/user.services')
 
 exports.createVeteranOrder = async (req, res) => {
     try {
@@ -62,6 +63,11 @@ exports.getVeteranOrderByCreatorId = async (req, res) => {
     try {
         const { id } = req.params
         const veteranOrder = await veteranOrderService.getVeteranOrderByCreatorIdService(id)
+
+        for (const v of veteranOrder) {
+            const user = await userService.findUserByIdService(v.veteranId._id);
+            v.veteranId.lastFour = user.details.lastFour;
+        }
 
         if (!veteranOrder || veteranOrder.length === 0) {
             return res.status(200).json({
@@ -163,6 +169,24 @@ exports.getVeteranOrderByStatus = async (req, res) => {
         })
     }
 }
+
+exports.getArchiveVeteranOrder = async (req, res) => {
+    try {
+        const { id } = req.params
+        const order = await veteranOrderService.getArchiveVeteranOrderService(id)
+
+        return res.status(200).json({
+            status: 'success',
+            data: order
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error.message
+        })
+    }
+}
+
 
 
 

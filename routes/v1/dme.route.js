@@ -3,6 +3,8 @@ const router = express.Router()
 const dmeController = require('../../controllers/DmeController/dme.controller')
 const uploadDocument = require('../../middlewares/importDocument')
 
+
+
 // api/v1/dme
 router.route('/task')
     .post(dmeController.addTask)
@@ -27,6 +29,7 @@ router.post('/invite-staff', dmeController.inviteStaff)
 
 router.post('/add-patient-to-doctor', dmeController.addPatientToDoctor)
 router.post('/add-patient-to-therapist', dmeController.addPatientToTherapist)
+router.post('/add-va-to-veteran', dmeController.addVaToVeteran)
 
 
 router.post('/upload-order-document', uploadDocument("order-documents").single("order-document"), dmeController.uploadDocuments)

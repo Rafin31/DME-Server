@@ -57,7 +57,7 @@ exports.getRepairOrderbyIdService = async (id) => {
 }
 
 exports.getRepairOrderByDmeSupplierService = async (id) => {
-    const order = await RepairOrder.find({ dmeSupplierId: id })
+    const order = await RepairOrder.find({ $and: [{ status: { $ne: "Archived" } }, { dmeSupplierId: id }] })
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "patientId", select: "_id fullName email" })
@@ -121,7 +121,7 @@ exports.getRepairOrderNoteByIdService = async (orderId) => {
             }
 
         )
-        .select("note")
+        .select("note createdAt")
     return notes
 }
 
@@ -139,6 +139,24 @@ exports.getRepairOrderByStatusService = async (status) => {
             }
         })
         .select('-__v -createdAt -updatedAt')
+
+    return order
+}
+
+exports.getArchiveRepairOrderService = async (id) => {
+
+    const order = await RepairOrder.find({ $and: [{ status: "Archived" }, { patientId: id }] })
+        .lean()
+        .populate({ path: "dmeSupplierId", select: "_id fullName email" })
+        .populate({ path: "patientId", select: "_id fullName email" })
+        .populate({
+            path: "notes",
+            populate: {
+                path: 'writerId',
+                select: "_id fullName email"
+            }
+        })
+        .select('-__v -updatedAt')
 
     return order
 }

@@ -1,5 +1,6 @@
 const app = require("./app");
 const errorHandler = require("./middlewares/errorHandler");
+const multer = require("multer");
 const port = process.env.PORT || 5000;
 
 const userRoutes = require('./routes/v1/user.route')
@@ -15,9 +16,11 @@ const vaStaffRouter = require('./routes/v1/vaProsthetics.route');
 const veteranRouter = require('./routes/v1/veteran.route');
 const privateMessageRouter = require('./routes/v1/privateMessage.route');
 
+
 //routes
 app.use('/api/v1/users', userRoutes) //  user route 
 app.use('/api/v1/dme', dmeRoutes) //  dme route 
+
 app.use('/api/v1/order', EquipmentOrderRoutes) // Equipment order route 
 app.use('/api/v1/veteran-order', VeteranOrderRoutes) // Equipment order route 
 app.use('/api/v1/repair-order', RepairOrderRoutes) // Equipment order route 
@@ -40,6 +43,7 @@ app.listen(port, () => {
 
 //handling global errors
 app.use(errorHandler)
+
 
 
 //can handel "unhandledRejection" bellow like this.

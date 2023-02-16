@@ -103,6 +103,24 @@ exports.getOrderByStatus = async (req, res) => {
         })
     }
 }
+
+exports.getArchiveOrder = async (req, res) => {
+    try {
+        const { id } = req.params
+        const order = await orderService.getArchiveOrderService(id)
+
+        return res.status(200).json({
+            status: 'success',
+            data: order
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error.message
+        })
+    }
+}
+
 exports.getOrderById = async (req, res) => {
     try {
         const { id } = req.params

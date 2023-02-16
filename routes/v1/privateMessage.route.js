@@ -14,6 +14,9 @@ router.route("/receiver/:id")
 router.route("/sender/:id")
     .get(privateMessageController.getMessageBySender)
 
+router.route("/chat/:id")
+    .get(privateMessageController.getChat)
+
 router.route("/:id")
     .delete(privateMessageController.deleteMessage)
 

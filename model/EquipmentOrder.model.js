@@ -38,9 +38,23 @@ const EquipmentOrderSchema = mongoose.Schema({
             message: "{VALUE} is not a Order Status"
         }
     },
+    dateCompleted: {
+        type: String,
+        trim: true
+    },
 },
     { timestamps: true }
 )
+
+// EquipmentOrderSchema.pre('updateOne', async function (next) {
+//     // this.set({ updatedAt: new Date() });
+//     const docToUpdate = await this.model.findOne(this.getQuery());
+//     console.log(docToUpdate.status);
+//     // console.log("updateOne updated", this.status)
+//     next();
+// })
+
+
 
 const EquipmentOrder = mongoose.model("Equipment_Order", EquipmentOrderSchema)
 

@@ -15,6 +15,9 @@ router.route("/dme-supplier/:id")
 router.route("/patient/:id")
     .get(orderController.getOrderByPatient)
 
+router.route("/archive-orders/:id")
+    .get(orderController.getArchiveOrder)
+
 router.route("/status")
     .get(orderController.getOrderByStatus)
 

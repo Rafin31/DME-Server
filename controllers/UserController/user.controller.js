@@ -35,6 +35,34 @@ exports.getAllUser = async (req, res) => {
     }
 }
 
+exports.getAllActiveUser = async (req, res) => {
+    try {
+        const users = await service.getAllActiveUserService()
+
+        const exceptCategory = users.map(({ userCategory, ...other }) => other)
+        const category = users.map(({ userCategory }) => userCategory)
+        const status = users.map(({ status }) => status)
+
+        const userDataPlain = exceptCategory.map((user, index) => ({
+            ...user,
+            category: category[index].category,
+            permission: category[index].permission,
+            status: status[index].status
+        }))
+
+        res.status(200).json({
+            status: "Success",
+            data: userDataPlain
+        })
+
+    } catch (error) {
+        res.status(400).json({
+            status: "failed",
+            message: error.message
+        })
+    }
+}
+
 exports.getUserByID = async (req, res) => {
     try {
         const { id } = req.params

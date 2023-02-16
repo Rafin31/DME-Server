@@ -34,10 +34,20 @@ const veteranSchema = mongoose.Schema({
         trim: true,
         required: [true, "Address is required"]
     },
+    lastFour: {
+        type: String,
+        trim: true,
+        required: [true, "Last Four is required"]
+    },
     document: {
         type: [ObjectId],
         ref: "Document"
     },
+    assignedVaProsthetic: {
+        type: [ObjectId],
+        ref: "User",
+        required: [true, "Assigned VA is required"]
+    }
 },
     { timestamps: true }
 )

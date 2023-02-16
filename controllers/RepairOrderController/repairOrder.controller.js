@@ -168,3 +168,21 @@ exports.getRepairOrderByStatus = async (req, res) => {
         })
     }
 }
+
+exports.getArchiveRepairOrder = async (req, res) => {
+    try {
+        const { id } = req.params
+        const order = await repairOrderService.getArchiveRepairOrderService(id)
+
+        return res.status(200).json({
+            status: 'success',
+            data: order
+        })
+
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error.message
+        })
+    }
+}

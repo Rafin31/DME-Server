@@ -25,6 +25,15 @@ exports.getAllUserService = async () => {
     return user;
 }
 
+exports.getAllActiveUserService = async () => {
+    const user = await User.find({ status: "63861954b3b3ded1ee267309" })
+        .lean()
+        .populate({ path: 'status', select: ' -updatedAt -createdAt -__v' })
+        .populate({ path: 'userCategory', select: '-updatedAt -createdAt -__v' })
+        .select('-password -updatedAt -createdAt -__v')
+    return user;
+}
+
 exports.createUserService = async (data) => {
 
     const session = await db.startSession();
@@ -87,6 +96,7 @@ exports.createUserService = async (data) => {
                 state: data?.state,
                 address: data?.address,
                 document: data?.document,
+                lastFour: data?.lastFour
             }
             await Veteran.create([veteranData], { session })
         }

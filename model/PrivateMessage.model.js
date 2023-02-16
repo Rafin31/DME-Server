@@ -23,6 +23,15 @@ const PrivateMessage = mongoose.Schema({
         type: String,
         trim: true,
         required: ['true', "Message Id is missing"]
+    },
+    hasRead: {
+        type: String,
+        trim: true,
+        required: ['true', "Has Read is missing"]
+    },
+    replyOf: {
+        type: ObjectId,
+        ref: "Private_Message",
     }
 },
     { timestamps: true }

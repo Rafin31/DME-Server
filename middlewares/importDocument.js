@@ -27,14 +27,16 @@ const uploadDocument = (folderName) => {
             if (supportedFile.test(fileExtension.toLocaleLowerCase())) {
                 cb(null, true)
             } else {
-                cb(`Must be a ${supportedFile.toString().replaceAll('|', " ").replaceAll('/', "").replaceAll('.', "")} type file`, false)
+
+                // cb(new Error(`Must be a ${supportedFile.toString().replaceAll('|', " ").replaceAll('/', "").replaceAll('.', "")} type file`))
+
+                cb(new Error(`File type not supported. Please upload a file with one of the following extensions: ${supportedFile.toString().replaceAll('|', " ").replaceAll('/', "").replaceAll('.', "").toLocaleUpperCase()}`))
             }
         },
         limits: {
             fileSize: 5000000
         },
     })
-
     return uploader
 }
 

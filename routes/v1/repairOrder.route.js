@@ -16,6 +16,9 @@ router.route('/byStatus')
 router.route('/dme-supplier/:id')
     .get(repairOrderController.getRepairOrderByDMESupplier)
 
+router.route('/archive-orders/:id')
+    .get(repairOrderController.getArchiveRepairOrder)
+
 router.route('/patient/:id')
     .get(repairOrderController.getRepairOrderByPatient)
 

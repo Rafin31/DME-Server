@@ -54,6 +54,10 @@ const VeteranOrderSchema = mongoose.Schema({
             message: "{VALUE} is not a Order Status"
         }
     },
+    dateCompleted: {
+        type: String,
+        trim: true
+    },
 },
     { timestamps: true }
 )

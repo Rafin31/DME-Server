@@ -66,6 +66,26 @@ exports.getMessageByReceiver = async (req, res) => {
     }
 }
 
+exports.getChat = async (req, res) => {
+    try {
+        const { id: receiverId } = req.params
+        const { si: senderId } = req.query
+
+        const message = await privateMessageService.getChatService(senderId, receiverId)
+
+        return res.status(200).json({
+            status: 'success',
+            data: message
+        })
+
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error.message
+        })
+    }
+}
+
 exports.deleteMessage = async (req, res) => {
     try {
         const { id } = req.params

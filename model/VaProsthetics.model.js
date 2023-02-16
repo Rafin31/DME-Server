@@ -18,6 +18,11 @@ const vaProstheticsSchema = mongoose.Schema({
         ref: "User",
         required: [true, "admin is required"]
     },
+    assignedTo: {
+        type: [ObjectId],
+        ref: "User",
+        required: [true, "Assigned To is required"]
+    }
 },
     { timestamps: true }
 )

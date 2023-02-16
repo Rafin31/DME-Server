@@ -5,11 +5,13 @@ const DME_Supplier = require("../../model/DmeSupplier.model")
 const Staff = require("../../model/Staff.model")
 const Invited_Staff = require("../../model/InvitedStaff.model")
 const Invited_VA_Prosthetics = require("../../model/InvitedVaProsthetics.model")
+const VA_Prosthetics = require("../../model/VaProsthetics.model")
 const Doctor = require("../../model/Doctor.model")
 const Therapist = require("../../model/Therapist.model")
 const EquipmentOrder = require("../../model/EquipmentOrder.model")
 const RepairOrder = require("../../model/RepairOrder.model")
 const VeteranOrder = require("../../model/VeteranOrder.model")
+const Veteran = require("../../model/Veteran.model")
 const Notes = require("../../model/Notes.model")
 const Document = require("../../model/Documents.model")
 const { db } = require("../../model/Task.model")
@@ -321,6 +323,7 @@ exports.addPatientToDoctorService = async (patientUserId, doctorUserId) => {
     }
 
 }
+
 exports.addPatientToTherapistService = async (patientUserId, therapistUserId) => {
 
     try {
@@ -341,6 +344,33 @@ exports.addPatientToTherapistService = async (patientUserId, therapistUserId) =>
         }
 
         throw new Error("Therapist Already assign to the patient")
+
+    } catch (error) {
+        throw new Error(error)
+    }
+
+}
+
+exports.addVaToVeteranService = async (veteranId, vaProstheticId) => {
+
+    try {
+        const vaProsthetic = await VA_Prosthetics.findOne({ userId: vaProstheticId })
+        const veteran = await Veteran.findOne({ userId: veteranId })
+
+        if (!vaProsthetic || !veteran) {
+            throw new Error("VA Prosthetic or Veteran not found")
+        }
+
+
+        if (!vaProsthetic?.assignedTo.includes(veteranId) || !veteran?.assignedVaProsthetic.push(vaProstheticId)) {
+            vaProsthetic.assignedTo.push(veteranId);
+            veteran.assignedVaProsthetic.push(vaProstheticId);
+            vaProsthetic.save({ runValidators: false })
+            veteran.save({ runValidators: false })
+            return "VA successfully Assign to the Veteran"
+        }
+
+        throw new Error(`VA already assigned to the Veteran`)
 
     } catch (error) {
         throw new Error(error)

@@ -1,4 +1,5 @@
 const VeteranOrder = require("../../model/VeteranOrder.model")
+const Veteran = require("../../model/Veteran.model")
 const Veteran_Order_Note = require("../../model/VeteranOrderNote.model")
 
 
@@ -60,7 +61,8 @@ exports.getVeteranOrderbyIdService = async (id) => {
 
 
 exports.getVeteranOrderByCreatorIdService = async (id) => {
-    const order = await VeteranOrder.find({ dmeSupplierId: id })
+    let veteran = []
+    const order = await VeteranOrder.find({ $and: [{ status: { $ne: "Archived" } }, { dmeSupplierId: id }] })
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "veteranId", select: "_id firstName lastName  fullName email" })
@@ -74,6 +76,7 @@ exports.getVeteranOrderByCreatorIdService = async (id) => {
         .select('-__v -updatedAt')
 
     return order
+
 }
 
 exports.getVeteranOrderByVeteranService = async (id) => {
@@ -123,7 +126,7 @@ exports.getVeteranOrderNoteByIdService = async (orderId) => {
             }
 
         )
-        .select("note")
+        .select("note createdAt")
     return notes
 }
 
@@ -144,3 +147,22 @@ exports.getVeteranOrderByStatusService = async (status) => {
 
     return order
 }
+
+
+exports.getArchiveVeteranOrderService = async (id) => {
+    const order = await VeteranOrder.find({ $and: [{ status: "Archived" }, { veteranId: id }] })
+        .lean()
+        .populate({ path: "dmeSupplierId", select: "_id fullName email" })
+        .populate({ path: "veteranId", select: "_id fullName email" })
+        .populate({
+            path: "notes",
+            populate: {
+                path: 'writerId',
+                select: "_id fullName email"
+            }
+        })
+        .select('-__v -updatedAt')
+
+    return order
+}
+

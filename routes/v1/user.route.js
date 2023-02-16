@@ -9,6 +9,9 @@ router.route("/")
     .get(userController.getAllUser)
     .post(userController.createUser)
 
+router.route("/active-user")
+    .get(userController.getAllActiveUser)
+
 
 router.route("/login")
     .post(userController.loginUser)

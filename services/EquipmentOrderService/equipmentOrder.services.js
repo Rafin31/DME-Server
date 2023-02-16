@@ -16,6 +16,7 @@ exports.createOrderService = async (data) => {
 
     return order
 }
+
 exports.getAllOrderService = async () => {
     const orders = await EquipmentOrder.find({})
         .lean()
@@ -46,7 +47,7 @@ exports.getOrderByIdService = async (id) => {
 }
 
 exports.getOrderByDmeSupplierService = async (id) => {
-    const order = await EquipmentOrder.find({ dmeSupplierId: id })
+    const order = await EquipmentOrder.find({ $and: [{ status: { $ne: "Archived" } }, { dmeSupplierId: id }] })
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "patientId", select: "_id fullName email" })
@@ -55,6 +56,7 @@ exports.getOrderByDmeSupplierService = async (id) => {
 
     return order
 }
+
 exports.getOrderByPatientService = async (id) => {
     const order = await EquipmentOrder.find({ patientId: id })
         .lean()
@@ -64,11 +66,23 @@ exports.getOrderByPatientService = async (id) => {
 
     return order
 }
+
 exports.getOrderByStatusService = async (status) => {
     const order = await EquipmentOrder.find({ status: status })
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "patientId", select: "_id fullName email" })
+        .select('-__v -updatedAt')
+
+    return order
+}
+
+exports.getArchiveOrderService = async (id) => {
+    const order = await EquipmentOrder.find({ $and: [{ status: "Archived" }, { patientId: id }] })
+        .lean()
+        .populate({ path: "dmeSupplierId", select: "_id fullName email" })
+        .populate({ path: "patientId", select: "_id fullName email" })
+        .populate({ path: "notes", select: "-updatedAt -__v" })
         .select('-__v -updatedAt')
 
     return order
@@ -116,6 +130,6 @@ exports.getNotesByOrderIdService = async (orderId) => {
             }
 
         )
-        .select("note")
+        .select("note createdAt")
     return notes
 }
