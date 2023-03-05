@@ -14,7 +14,7 @@ const RepairOrderNoteSchema = mongoose.Schema({
         ref: "User",
         required: ['true', "Order Id  is missing"]
     },
-    note: {
+    notes: {
         type: String,
         trim: true,
         required: [true, "Note is required"]

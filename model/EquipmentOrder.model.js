@@ -23,8 +23,8 @@ const EquipmentOrderSchema = mongoose.Schema({
         trim: true
     },
     notes: {
-        type: ObjectId,
-        ref: "Equipment_Order_Note"
+        type: String,
+        trim: true
     },
     document: {
         type: [ObjectId],
@@ -45,15 +45,6 @@ const EquipmentOrderSchema = mongoose.Schema({
 },
     { timestamps: true }
 )
-
-// EquipmentOrderSchema.pre('updateOne', async function (next) {
-//     // this.set({ updatedAt: new Date() });
-//     const docToUpdate = await this.model.findOne(this.getQuery());
-//     console.log(docToUpdate.status);
-//     // console.log("updateOne updated", this.status)
-//     next();
-// })
-
 
 
 const EquipmentOrder = mongoose.model("Equipment_Order", EquipmentOrderSchema)

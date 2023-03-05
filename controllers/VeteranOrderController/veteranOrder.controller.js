@@ -136,6 +136,23 @@ exports.updateVeteranOrder = async (req, res) => {
     }
 }
 
+exports.insertNotesByVeteranOrderId = async (req, res) => {
+    try {
+        const { id } = req.params
+        const notes = await veteranOrderService.insertVeteranOrderNoteByIdService(req.body, id)
+
+        return res.status(200).json({
+            status: 'success',
+            data: notes
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error.message
+        })
+    }
+}
+
 exports.getNotesByVeteranOrderId = async (req, res) => {
     try {
         const { id } = req.params

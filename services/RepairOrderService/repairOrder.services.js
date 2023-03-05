@@ -6,19 +6,18 @@ const Repair_Order_Note = require("../../model/RepairOrderNote.model")
 exports.createRepairOrderService = async (data) => {
 
     const repairOrder = await RepairOrder.create(data)
-    let insertNote
-    if (data.note) {
-        insertNote = await Repair_Order_Note.create({
-            writerId: data.dmeSupplierId,
-            orderId: repairOrder._id,
-            note: data.note
-        })
-        repairOrder.notes = insertNote._id
-        repairOrder.save({ runValidators: false })
-    }
-
     return repairOrder
 
+    // let insertNote
+    // if (data.note) {
+    //     insertNote = await Repair_Order_Note.create({
+    //         writerId: data.dmeSupplierId,
+    //         orderId: repairOrder._id,
+    //         note: data.note
+    //     })
+    //     repairOrder.notes = insertNote._id
+    //     repairOrder.save({ runValidators: false })
+    // }
 }
 
 exports.getAllRepairOrderService = async () => {
@@ -94,18 +93,28 @@ exports.getRepairOrderByDmePatientService = async (id) => {
 exports.updateRepairOrderService = async (data, id) => {
 
     const update = await RepairOrder.updateOne({ _id: id }, { $set: data }, { runValidators: true })
-    let insertNote
-    if (data.note) {
-        insertNote = await Repair_Order_Note.create({
-            writerId: data.dmeSupplierId,
-            orderId: id,
-            note: data.note
-        })
-        await RepairOrder.updateOne({ _id: id }, { $set: { notes: insertNote._id } }, { runValidators: true })
-    }
     return update
+
+    // let insertNote
+    // if (data.note) {
+    //     insertNote = await Repair_Order_Note.create({
+    //         writerId: data.dmeSupplierId,
+    //         orderId: id,
+    //         note: data.note
+    //     })
+    //     await RepairOrder.updateOne({ _id: id }, { $set: { notes: insertNote._id } }, { runValidators: true })
+    // }
 }
 
+
+exports.insertRepairOrderNoteService = async (data, orderId) => {
+    let insertNote = await Repair_Order_Note.create({
+        writerId: data.writerId,
+        orderId: orderId,
+        notes: data.notes
+    })
+    return insertNote;
+}
 
 exports.getRepairOrderNoteByIdService = async (orderId) => {
     let notes = await Repair_Order_Note.find({ orderId: orderId })
@@ -121,7 +130,8 @@ exports.getRepairOrderNoteByIdService = async (orderId) => {
             }
 
         )
-        .select("note createdAt")
+        .sort("-createdAt")
+        .select("notes createdAt")
     return notes
 }
 

@@ -24,6 +24,8 @@ router.route('/patient/:id')
 
 router.route('/repair-order-note/:id')
     .get(repairOrderController.getNotesByRepairOrderId)
+    .post(repairOrderController.insertNotesByRepairOrderId)
+
 
 router.route('/:id')
     .get(repairOrderController.getRepairOrderById)

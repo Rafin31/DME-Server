@@ -17,6 +17,7 @@ router.route('/archive-orders/:id')
 
 router.route('/veteran-order-note/:id')
     .get(veteranOrderController.getNotesByVeteranOrderId)
+    .post(veteranOrderController.insertNotesByVeteranOrderId)
 
 router.route('/creator/:id')
     .get(veteranOrderController.getVeteranOrderByCreatorId)

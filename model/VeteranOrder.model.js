@@ -27,8 +27,8 @@ const VeteranOrderSchema = mongoose.Schema({
         trim: true
     },
     notes: {
-        type: ObjectId,
-        ref: "Veteran_Order_Note"
+        type: String,
+        trim: true
     },
     document: {
         type: [ObjectId],

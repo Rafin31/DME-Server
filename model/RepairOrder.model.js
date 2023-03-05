@@ -23,8 +23,8 @@ const RepairOrderSchema = mongoose.Schema({
         trim: true
     },
     notes: {
-        type: ObjectId,
-        ref: "Repair_Order_Note"
+        type: String,
+        trim: true
     },
     document: {
         type: [ObjectId],

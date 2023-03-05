@@ -170,13 +170,6 @@ exports.insertOrderNote = async (req, res) => {
         const { id } = req.params
         const updated = await orderService.insertOrderNoteService(req.body, id)
 
-        if (!updated) {
-            return res.status(400).json({
-                status: 'fail',
-                data: "Something Went Wrong"
-            })
-        }
-
         return res.status(200).json({
             status: 'success',
             data: updated

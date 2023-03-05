@@ -3,18 +3,17 @@ const Equipment_Order_Note = require("../../model/EquipmentOrderNote.model")
 
 exports.createOrderService = async (data) => {
     const order = await EquipmentOrder.create(data)
-    let insertNote
-    if (data.note) {
-        insertNote = await Equipment_Order_Note.create({
-            writerId: data.dmeSupplierId,
-            orderId: order._id,
-            note: data.note
-        })
-        order.notes = insertNote._id
-        order.save({ runValidators: false })
-    }
-
     return order
+    // let insertNote
+    // if (data.note) {
+    //     insertNote = await Equipment_Order_Note.create({
+    //         writerId: data.dmeSupplierId,
+    //         orderId: order._id,
+    //         note: data.note
+    //     })
+    //     order.notes = insertNote._id
+    //     order.save({ runValidators: false })
+    // }
 }
 
 exports.getAllOrderService = async () => {
@@ -91,15 +90,6 @@ exports.getArchiveOrderService = async (id) => {
 exports.updateOrderService = async (data, id) => {
 
     const update = await EquipmentOrder.updateOne({ _id: id }, { $set: data }, { runValidators: true })
-    let insertNote
-    if (data.note) {
-        insertNote = await Equipment_Order_Note.create({
-            writerId: data.dmeSupplierId,
-            orderId: id,
-            note: data.note
-        })
-        await EquipmentOrder.updateOne({ _id: id }, { $set: { notes: insertNote._id } }, { runValidators: true })
-    }
     return update
 }
 
@@ -108,11 +98,11 @@ exports.insertOrderNoteService = async (data, orderId) => {
     let insertNote = await Equipment_Order_Note.create({
         writerId: data.writerId,
         orderId: orderId,
-        note: data.note
+        notes: data.notes
     })
 
-    const updateOrder = await EquipmentOrder.updateOne({ _id: orderId }, { $set: { notes: insertNote._id } }, { runValidators: true })
-    return { updateOrder, insertNote }
+    // const updateOrder = await EquipmentOrder.updateOne({ _id: orderId }, { $set: { notes: insertNote._id } }, { runValidators: true })
+    return insertNote;
 }
 
 
@@ -130,6 +120,7 @@ exports.getNotesByOrderIdService = async (orderId) => {
             }
 
         )
-        .select("note createdAt")
+        .sort("-createdAt")
+        .select("notes createdAt")
     return notes
 }

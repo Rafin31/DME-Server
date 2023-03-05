@@ -126,6 +126,23 @@ exports.updateRepairOrder = async (req, res) => {
 }
 
 
+exports.insertNotesByRepairOrderId = async (req, res) => {
+    try {
+        const { id } = req.params
+        const notes = await repairOrderService.insertRepairOrderNoteService(req.body, id)
+
+        return res.status(200).json({
+            status: 'success',
+            data: notes
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error.message
+        })
+    }
+}
+
 exports.getNotesByRepairOrderId = async (req, res) => {
     try {
         const { id } = req.params

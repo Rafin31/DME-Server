@@ -6,18 +6,18 @@ const Veteran_Order_Note = require("../../model/VeteranOrderNote.model")
 exports.createVeteranOrderService = async (data) => {
 
     const veteranOrder = await VeteranOrder.create(data)
-    let insertNote
-    if (data.note) {
-        insertNote = await Veteran_Order_Note.create({
-            writerId: data.dmeSupplierId,
-            orderId: veteranOrder._id,
-            note: data.note
-        })
-        veteranOrder.notes = insertNote._id
-        veteranOrder.save({ runValidators: false })
-    }
-
     return veteranOrder
+
+    // let insertNote
+    // if (data.note) {
+    //     insertNote = await Veteran_Order_Note.create({
+    //         writerId: data.dmeSupplierId,
+    //         orderId: veteranOrder._id,
+    //         note: data.note
+    //     })
+    //     veteranOrder.notes = insertNote._id
+    //     veteranOrder.save({ runValidators: false })
+    // }
 
 }
 
@@ -99,18 +99,27 @@ exports.getVeteranOrderByVeteranService = async (id) => {
 exports.updateVeteranOrderService = async (data, id) => {
 
     const update = await VeteranOrder.updateOne({ _id: id }, { $set: data }, { runValidators: true })
-    let insertNote
-    if (data.note) {
-        insertNote = await Veteran_Order_Note.create({
-            writerId: data.dmeSupplierId,
-            orderId: id,
-            note: data.note
-        })
-        await VeteranOrder.updateOne({ _id: id }, { $set: { notes: insertNote._id } }, { runValidators: true })
-    }
     return update
+
+    // let insertNote
+    // if (data.note) {
+    //     insertNote = await Veteran_Order_Note.create({
+    //         writerId: data.dmeSupplierId,
+    //         orderId: id,
+    //         note: data.note
+    //     })
+    //     await VeteranOrder.updateOne({ _id: id }, { $set: { notes: insertNote._id } }, { runValidators: true })
+    // }
 }
 
+exports.insertVeteranOrderNoteByIdService = async (data, orderId) => {
+    let insertNote = await Veteran_Order_Note.create({
+        writerId: data.writerId,
+        orderId: orderId,
+        notes: data.notes
+    })
+    return insertNote;
+}
 
 exports.getVeteranOrderNoteByIdService = async (orderId) => {
     let notes = await Veteran_Order_Note.find({ orderId: orderId })
@@ -126,10 +135,10 @@ exports.getVeteranOrderNoteByIdService = async (orderId) => {
             }
 
         )
-        .select("note createdAt")
+        .sort("-createdAt")
+        .select("notes createdAt")
     return notes
 }
-
 
 exports.getVeteranOrderByStatusService = async (status) => {
     const order = await VeteranOrder.find({ status: status })
