@@ -1,5 +1,6 @@
 const EquipmentOrder = require("../../model/EquipmentOrder.model")
 const Equipment_Order_Note = require("../../model/EquipmentOrderNote.model")
+const Patient = require("../../model/Patient.model")
 
 exports.createOrderService = async (data) => {
     const order = await EquipmentOrder.create(data)
@@ -53,6 +54,13 @@ exports.getOrderByDmeSupplierService = async (id) => {
         .populate({ path: "notes", select: "-updatedAt -__v" })
         .select('-__v -updatedAt')
 
+    if (order.length !== 0) {
+        for (const or of order) {
+            const patientDob = await Patient.find({ userId: or.patientId._id }).lean().select("dob")
+            or.patientId.patientDob = await patientDob[0].dob
+        }
+    }
+
     return order
 }
 
@@ -62,6 +70,13 @@ exports.getOrderByPatientService = async (id) => {
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "patientId", select: "_id fullName email" })
         .select('-__v -createdAt -updatedAt')
+
+    if (order.length !== 0) {
+        for (const or of order) {
+            const patientDob = await Patient.find({ userId: or.patientId._id }).lean().select("dob")
+            or.patientId.patientDob = await patientDob[0].dob
+        }
+    }
 
     return order
 }
@@ -73,6 +88,13 @@ exports.getOrderByStatusService = async (status) => {
         .populate({ path: "patientId", select: "_id fullName email" })
         .select('-__v -updatedAt')
 
+    if (order.length !== 0) {
+        for (const or of order) {
+            const patientDob = await Patient.find({ userId: or.patientId._id }).lean().select("dob")
+            or.patientId.patientDob = await patientDob[0].dob
+        }
+    }
+
     return order
 }
 
@@ -83,6 +105,13 @@ exports.getArchiveOrderService = async (id) => {
         .populate({ path: "patientId", select: "_id fullName email" })
         .populate({ path: "notes", select: "-updatedAt -__v" })
         .select('-__v -updatedAt')
+
+    if (order.length !== 0) {
+        for (const or of order) {
+            const patientDob = await Patient.find({ userId: or.patientId._id }).lean().select("dob")
+            or.patientId.patientDob = await patientDob[0].dob
+        }
+    }
 
     return order
 }

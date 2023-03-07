@@ -1,4 +1,5 @@
 
+const Patient = require("../../model/Patient.model")
 const RepairOrder = require("../../model/RepairOrder.model")
 const Repair_Order_Note = require("../../model/RepairOrderNote.model")
 
@@ -38,7 +39,7 @@ exports.getAllRepairOrderService = async () => {
 }
 
 exports.getRepairOrderbyIdService = async (id) => {
-    const repairOrder = await RepairOrder.findById(id)
+    const order = await RepairOrder.findById(id)
         .lean()
         .populate({ path: "dmeSupplierId", select: "fullName email" })
         .populate({ path: "patientId", select: "fullName email" })
@@ -52,7 +53,7 @@ exports.getRepairOrderbyIdService = async (id) => {
         .populate({ path: "document", select: "-updatedAt -__v" })
         .select('-__v -createdAt -updatedAt')
 
-    return repairOrder
+    return order
 }
 
 exports.getRepairOrderByDmeSupplierService = async (id) => {
@@ -68,6 +69,13 @@ exports.getRepairOrderByDmeSupplierService = async (id) => {
             }
         })
         .select('-__v -updatedAt')
+
+    if (order.length !== 0) {
+        for (const or of order) {
+            const patientDob = await Patient.find({ userId: or.patientId._id }).lean().select("dob")
+            or.patientId.patientDob = await patientDob[0].dob
+        }
+    }
 
     return order
 }
@@ -85,6 +93,13 @@ exports.getRepairOrderByDmePatientService = async (id) => {
             }
         })
         .select('-__v -createdAt -updatedAt')
+
+    if (order.length !== 0) {
+        for (const or of order) {
+            const patientDob = await Patient.find({ userId: or.patientId._id }).lean().select("dob")
+            or.patientId.patientDob = await patientDob[0].dob
+        }
+    }
 
     return order
 }
@@ -150,6 +165,14 @@ exports.getRepairOrderByStatusService = async (status) => {
         })
         .select('-__v -createdAt -updatedAt')
 
+
+    if (order.length !== 0) {
+        for (const or of order) {
+            const patientDob = await Patient.find({ userId: or.patientId._id }).lean().select("dob")
+            or.patientId.patientDob = await patientDob[0].dob
+        }
+    }
+
     return order
 }
 
@@ -167,6 +190,13 @@ exports.getArchiveRepairOrderService = async (id) => {
             }
         })
         .select('-__v -updatedAt')
+
+    if (order.length !== 0) {
+        for (const or of order) {
+            const patientDob = await Patient.find({ userId: or.patientId._id }).lean().select("dob")
+            or.patientId.patientDob = await patientDob[0].dob
+        }
+    }
 
     return order
 }

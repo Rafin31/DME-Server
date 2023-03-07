@@ -50,7 +50,7 @@ const userSchema = mongoose.Schema({
                     minUppercase: 1,
                     minSymbol: 1,
                 }),
-            message: "Password is not strong enough"
+            message: "Password should be 8 characters long and should contain minimum of one lowercase, number, uppercase and symbol!"
         },
     },
     confirmPassword: {
