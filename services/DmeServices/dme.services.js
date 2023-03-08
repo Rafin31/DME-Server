@@ -308,7 +308,7 @@ exports.addPatientToDoctorService = async (patientUserId, doctorUserId) => {
         }
 
 
-        if (!doctor.patient.includes(patientUserId) || !patient.doctor.push(doctorUserId)) {
+        if (!doctor.patient.includes(patientUserId) || !patient.doctor.includes(doctorUserId)) {
             doctor.patient.push(patientUserId);
             patient.doctor.push(doctorUserId);
             doctor.save({ runValidators: false })
@@ -335,7 +335,7 @@ exports.addPatientToTherapistService = async (patientUserId, therapistUserId) =>
         }
 
 
-        if (!therapist.patient.includes(patientUserId) || !patient.therapist.push(therapistUserId)) {
+        if (!therapist.patient.includes(patientUserId) || !patient.therapist.includes(therapistUserId)) {
             therapist.patient.push(patientUserId);
             patient.therapist.push(therapistUserId);
             therapist.save({ runValidators: false })
@@ -362,7 +362,7 @@ exports.addVaToVeteranService = async (veteranId, vaProstheticId) => {
         }
 
 
-        if (!vaProsthetic?.assignedTo.includes(veteranId) || !veteran?.assignedVaProsthetic.push(vaProstheticId)) {
+        if (!vaProsthetic?.assignedTo.includes(veteranId) || !veteran?.assignedVaProsthetic.includes(vaProstheticId)) {
             vaProsthetic.assignedTo.push(veteranId);
             veteran.assignedVaProsthetic.push(vaProstheticId);
             vaProsthetic.save({ runValidators: false })
@@ -371,6 +371,59 @@ exports.addVaToVeteranService = async (veteranId, vaProstheticId) => {
         }
 
         throw new Error(`VA already assigned to the Veteran`)
+
+    } catch (error) {
+        throw new Error(error)
+    }
+
+}
+
+// remove doctor from patient 
+
+exports.removeDoctorService = async (patientUserId, doctorUserId) => {
+
+    try {
+        const doctor = await Doctor.findOne({ userId: doctorUserId })
+        const patient = await Patient.findOne({ userId: patientUserId })
+
+        if (!doctor || !patient) {
+            throw new Error("Doctor or Patient not found")
+        }
+
+
+        if (!doctor.patient.includes(patientUserId) || !patient.doctor.includes(doctorUserId)) {
+            throw new Error("Doctor is not assigned!")
+        }
+
+        doctor.patient.pull(patientUserId)
+        patient.doctor.pull(doctorUserId)
+        doctor.save({ runValidators: false })
+        patient.save({ runValidators: false })
+
+    } catch (error) {
+        throw new Error(error)
+    }
+
+}
+
+exports.removeTherapistService = async (patientUserId, therapistUserId) => {
+
+    try {
+        const therapist = await Therapist.findOne({ userId: therapistUserId })
+        const patient = await Patient.findOne({ userId: patientUserId })
+
+        if (!therapist || !patient) {
+            throw new Error("Therapist or Patient not found")
+        }
+
+        if (!therapist.patient.includes(patientUserId) || !patient.therapist.includes(therapistUserId)) {
+            throw new Error("Therapist is not assigned!")
+        }
+
+        therapist.patient.pull(patientUserId)
+        patient.therapist.pull(therapistUserId)
+        therapist.save({ runValidators: false })
+        patient.save({ runValidators: false })
 
     } catch (error) {
         throw new Error(error)

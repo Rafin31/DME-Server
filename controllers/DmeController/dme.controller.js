@@ -534,6 +534,50 @@ exports.addVaToVeteran = async (req, res) => {
     }
 }
 
+//Remove doctor from patient
+
+exports.removeDoctor = async (req, res) => {
+    try {
+        const { patientUserId } = req.body
+        const { doctorUserId } = req.body
+
+        const removed = await dmeService.removeDoctorService(patientUserId, doctorUserId)
+
+        return res.status(200).json({
+            status: "success",
+            data: removed
+        })
+
+    } catch (error) {
+        return res.status(400).json({
+            status: "fail",
+            data: error.message
+        })
+    }
+}
+
+exports.removeTherapist = async (req, res) => {
+    try {
+        const { patientUserId } = req.body
+        const { therapistUserId } = req.body
+
+        const removed = await dmeService.removeTherapistService(patientUserId, therapistUserId)
+
+        return res.status(200).json({
+            status: "success",
+            data: removed
+        })
+
+    } catch (error) {
+        return res.status(400).json({
+            status: "fail",
+            data: error.message
+        })
+    }
+}
+
+
+
 // Banner
 exports.uploadBanner = async (req, res) => {
     try {

@@ -32,6 +32,10 @@ router.post('/add-patient-to-therapist', dmeController.addPatientToTherapist)
 router.post('/add-va-to-veteran', dmeController.addVaToVeteran)
 
 
+router.post('/remove-doctor-from-patient', dmeController.removeDoctor)
+router.post('/remove-therapist-from-patient', dmeController.removeTherapist)
+
+
 router.post('/upload-order-document', uploadDocument("order-documents").single("order-document"), dmeController.uploadDocuments)
 router.post('/upload-patient-document/:id', uploadDocument("patient-documents").single("patient-document"), dmeController.uploadDocuments)
 
