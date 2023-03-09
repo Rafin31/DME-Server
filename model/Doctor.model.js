@@ -26,27 +26,22 @@ const doctorSchema = mongoose.Schema({
     country: {
         type: String,
         trim: true,
-        required: [true, "Country is required"]
     },
     city: {
         type: String,
         trim: true,
-        required: [true, "CIty is required"]
     },
     state: {
         type: String,
         trim: true,
-        required: [true, "State is required"]
     },
     zip: {
         type: Number,
         trim: true,
-        required: [true, "Zip code is required"]
     },
     address: {
         type: String,
         trim: true,
-        required: [true, "Address is required"]
     },
     patient: {
         type: [ObjectId],

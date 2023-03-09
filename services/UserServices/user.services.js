@@ -223,8 +223,11 @@ exports.updateUserService = async (id, data) => {
 
         const userCategory = await UserCategory.findById(user?.userCategory).select("-_id category").session(session)
 
-        if (userCategory.category === "Doctor" || userCategory.category === "Therapist") {
-            throw new Error("Not Allowed")
+        if (userCategory.category === "Doctor") {
+            await Doctor.updateOne({ userId: user._id }, { $set: data }, { runValidators: true }).session(session)
+        }
+        if (userCategory.category === "Therapist") {
+            await Therapist.updateOne({ userId: user._id }, { $set: data }, { runValidators: true }).session(session)
         }
 
         if (userCategory.category === "DME-Supplier") {
