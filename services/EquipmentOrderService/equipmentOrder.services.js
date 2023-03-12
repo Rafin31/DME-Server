@@ -1,6 +1,7 @@
 const EquipmentOrder = require("../../model/EquipmentOrder.model")
 const Equipment_Order_Note = require("../../model/EquipmentOrderNote.model")
 const Patient = require("../../model/Patient.model")
+const { findUserByIdService } = require("../UserServices/user.services")
 
 exports.createOrderService = async (data) => {
     const order = await EquipmentOrder.create(data)
@@ -151,5 +152,14 @@ exports.getNotesByOrderIdService = async (orderId) => {
         )
         .sort("-createdAt")
         .select("notes createdAt")
+
+    if (notes.length !== 0) {
+        for (const note of notes) {
+            let writer = await findUserByIdService(note.writerId._id)
+            const noteObj = note.toObject()
+            noteObj.writerId.companyName = writer?.details?.companyName
+            notes[notes.indexOf(note)] = noteObj
+        }
+    }
     return notes
 }
