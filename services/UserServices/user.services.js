@@ -61,6 +61,7 @@ exports.createUserService = async (data) => {
             const doctorData = {
                 userId: createdUser[0]?._id,
                 companyName: data?.companyName,
+                title: data?.title,
                 npiNumber: data?.npiNumber,
                 phoneNumber: data?.phoneNumber,
                 country: data?.country,
@@ -76,6 +77,7 @@ exports.createUserService = async (data) => {
             const therapistData = {
                 userId: createdUser[0]?._id,
                 companyName: data?.companyName,
+                title: data?.title,
                 npiNumber: data?.npiNumber,
                 phoneNumber: data?.phoneNumber,
                 country: data?.country,

@@ -19,6 +19,10 @@ const therapistSchema = mongoose.Schema({
         trim: true,
         required: [true, "NPI number is required"]
     },
+    title: {
+        type: String,
+        trim: true,
+    },
     phoneNumber: {
         type: String,
         trim: true,
