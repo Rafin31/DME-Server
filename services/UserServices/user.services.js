@@ -445,6 +445,31 @@ exports.importPatientService = async (data) => {
     }
 }
 
+exports.importDoctorService = async (data) => {
+
+    const session = await db.startSession();
+    try {
+        session.startTransaction();
+        const users = await User.insertMany(data, { session }) //will insert value which are correct
+
+        const doctorData = data.map((doctor, index) => (
+            {
+                ...doctor,
+                userId: users[index]._id
+            }
+        ))
+        await Doctor.insertMany(doctorData, { session }) //will insert value which are correct
+        await session.commitTransaction();
+        return users
+
+    } catch (error) {
+        await session.abortTransaction();
+        throw error
+    } finally {
+        session.endSession();
+    }
+}
+
 exports.getAllPatientService = async () => {
     const patients = await Patient.find({})
         .lean()
@@ -460,6 +485,15 @@ exports.getAllDmeSupplierService = async () => {
 
     return dme
 }
+exports.getAllDoctorService = async () => {
+    const doctor = await Doctor.find({})
+        .lean()
+        .populate({ path: "userId", select: '-_id -updatedAt -createdAt -status -userCategory -password -__v' })
+        .select('-updatedAt -createdAt -__v -_id')
+
+    return doctor
+}
+
 
 //get Patient By UserId 
 exports.getPatientByUserIdService = async (id) => {

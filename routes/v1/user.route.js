@@ -25,7 +25,12 @@ router.route("/category")
 
 
 router.post('/import-patient', uploadDocument("patient-import").single("patient-list"), userController.importPatient)
+router.post('/import-doctor', uploadDocument("doctor-import").single("doctor-list"), userController.importDoctor)
+
+
+
 router.get('/export-patient', userController.exportPatient)
+router.get('/export-doctor', userController.exportDoctor)
 
 router.post('/reset-password-request', userController.resetPasswordRequest)
 router.get('/reset-password-request/confirmation/:token', userController.resetPasswordConfirmation) //will come from user email

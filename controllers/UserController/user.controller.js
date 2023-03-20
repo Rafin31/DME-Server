@@ -202,6 +202,56 @@ exports.importPatient = async (req, res) => {
     }
 }
 
+exports.importDoctor = async (req, res) => {
+    try {
+        const excelData = excelToJson({
+            sourceFile: `./public/documents/uploads/doctor-import/${req.file.filename}`,
+            header: {
+                rows: 1
+            },
+            columnToKey: {
+                A: 'firstName',
+                B: 'lastName',
+                C: 'fullName',
+                D: 'title',
+                E: 'email',
+                F: 'password',
+                G: 'userCategory',
+                H: 'country',
+                I: 'city',
+                J: 'state',
+                K: 'zip',
+                L: 'npiNumber',
+                M: 'companyName',
+                N: 'address',
+                O: 'phoneNumber',
+            }
+        });
+
+
+        const doctorData = excelData.Sheet1.map((data) => (
+            {
+                ...data,
+                userCategory: "638f775ea7f2be8abe01d2d4", //Category Doctor ID
+                status: "63861954b3b3ded1ee267309" //Status Active ID
+
+            }
+        ));
+
+        const doctors = await service.importDoctorService(doctorData)
+
+        res.status(200).json({
+            status: "success",
+            data: doctors
+        })
+    } catch (error) {
+        res.status(400).json({
+            status: "failed",
+            message: error?.message
+        })
+    }
+}
+
 exports.exportPatient = async (req, res) => {
     try {
         const patients = await service.getAllPatientService();
@@ -227,6 +277,41 @@ exports.exportPatient = async (req, res) => {
 
 
         res.download("./public/documents/uploads/patient-import/export-patient.xlsx")
+
+    } catch (error) {
+
+        res.status(200).json({
+            status: "fail",
+            data: error
+        })
+    }
+
+}
+exports.exportDoctor = async (req, res) => {
+    try {
+        const doctors = await service.getAllDoctorService();
+
+        const exceptUserID = doctors.map(({ userId, document, patient, ...other }) => other)
+        const userID = doctors.map(({ userId, ...other }) => userId)
+
+        const patientDataPlain = exceptUserID.map((user, index) => ({
+            firstName: userID[index].firstName,
+            lastName: userID[index].lastName,
+            fullName: userID[index].fullName,
+            email: userID[index].email,
+            ...user
+        }))
+
+        const wb = XLSX.utils.book_new()
+        let temp = JSON.stringify(patientDataPlain);
+        temp = JSON.parse(temp);
+        const ws = XLSX.utils.json_to_sheet(temp);
+        const down = './public/documents/uploads/doctor-import/export-doctor.xlsx'
+        XLSX.utils.book_append_sheet(wb, ws, "sheet1");
+        XLSX.writeFile(wb, down);
+
+
+        res.download("./public/documents/uploads/doctor-import/export-doctor.xlsx")
 
     } catch (error) {
 

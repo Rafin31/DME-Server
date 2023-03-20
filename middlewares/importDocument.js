@@ -15,7 +15,7 @@ const uploadDocument = (folderName) => {
         storage,
         fileFilter: (req, file, cb) => {
             let supportedFile
-            if (folderName === "patient-import") {
+            if (folderName === "patient-import" || folderName === "doctor-import" || folderName === "veteran-import") {
                 supportedFile = /.xlsx/
             } else if (folderName === "dme-banner") {
                 supportedFile = /.jpg|.jpeg|.png/
@@ -27,9 +27,6 @@ const uploadDocument = (folderName) => {
             if (supportedFile.test(fileExtension.toLocaleLowerCase())) {
                 cb(null, true)
             } else {
-
-                // cb(new Error(`Must be a ${supportedFile.toString().replaceAll('|', " ").replaceAll('/', "").replaceAll('.', "")} type file`))
-
                 cb(new Error(`File type not supported. Please upload a file with one of the following extensions: ${supportedFile.toString().replaceAll('|', " ").replaceAll('/', "").replaceAll('.', "").toLocaleUpperCase()}`))
             }
         },
