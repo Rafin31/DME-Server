@@ -147,8 +147,8 @@ exports.getNotes = async (req, res) => {
 
 exports.getNotesByDmeAndPatient = async (req, res) => {
     try {
-        const { writerId, patientId } = req.query
-        const notes = await dmeService.getNotesByDmeAndPatientService(writerId, patientId)
+        const { writerId, noteFor } = req.query
+        const notes = await dmeService.getNotesByDmeAndPatientService(writerId, noteFor)
 
 
         if (!notes) {

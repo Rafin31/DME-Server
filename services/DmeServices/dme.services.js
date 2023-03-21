@@ -165,11 +165,11 @@ exports.getNotesService = async () => {
     return notes
 }
 
-exports.getNotesByDmeAndPatientService = async (dmeId, patient_Id) => {
+exports.getNotesByDmeAndPatientService = async (dmeId, noteFor) => {
     const notes = await Notes
-        .find({ $and: [{ writerId: dmeId }, { patientId: patient_Id }] })
+        .find({ $and: [{ writerId: dmeId }, { noteFor: noteFor }] })
         .populate({
-            path: "patientId",
+            path: "noteFor",
             select: "_id fullName email"
         })
         .populate({

@@ -9,10 +9,10 @@ const notesSchema = mongoose.Schema({
         ref: "User",
         required: ['true', "Writer Id  is missing"]
     },
-    patientId: {
+    noteFor: {
         type: ObjectId,
         ref: "User",
-        required: ['true', "Patient Id  is missing"]
+        required: ['true', "Note for is missing"]
     },
     note: {
         type: String,
