@@ -160,23 +160,27 @@ exports.importPatient = async (req, res) => {
                 F: 'userCategory',
                 G: 'gender',
                 H: 'dob',
-                I: 'age',
-                J: 'weight',
-                K: 'country',
-                L: 'city',
-                M: 'state',
-                N: 'address',
-                O: 'primaryInsurance',
-                P: "secondaryInsurance",
-                Q: "phoneNumber",
+                I: 'weight',
+                J: 'country',
+                K: 'city',
+                L: 'state',
+                M: 'address',
+                N: 'primaryInsurance',
+                O: 'secondaryInsurance',
+                P: "phoneNumber",
             }
         });
 
-        const patientDob = excelData.Sheet1.map((data) => {
-
-            const date = new Date(data.dob.toDateString())
-            return { ...data, dob: `${date.getMonth()}/${date.getDay()}/${date.getFullYear()}` }
-        })
+        const patientDob = excelData.sheet1 ?
+            excelData.sheet1.map((data) => {
+                const date = new Date(data.dob)
+                return { ...data, dob: `${date.getMonth()}/${date.getDay()}/${date.getFullYear()}` }
+            })
+            :
+            excelData.Sheet1.map((data) => {
+                const date = new Date(data.dob)
+                return { ...data, dob: `${date.getMonth()}/${date.getDay()}/${date.getFullYear()}` }
+            })
 
         const patientData = patientDob.map((data) => (
             {
@@ -228,15 +232,23 @@ exports.importDoctor = async (req, res) => {
             }
         });
 
-
-        const doctorData = excelData.Sheet1.map((data) => (
+        const doctorData = excelData.Sheet1 ? excelData.Sheet1.map((data) => (
             {
                 ...data,
                 userCategory: "638f775ea7f2be8abe01d2d4", //Category Doctor ID
                 status: "63861954b3b3ded1ee267309" //Status Active ID
 
             }
-        ));
+        ))
+            :
+            excelData.sheet1.map((data) => (
+                {
+                    ...data,
+                    userCategory: "638f775ea7f2be8abe01d2d4", //Category Doctor ID
+                    status: "63861954b3b3ded1ee267309" //Status Active ID
+
+                }
+            ))
 
         const doctors = await service.importDoctorService(doctorData)
 
@@ -251,6 +263,62 @@ exports.importDoctor = async (req, res) => {
         })
     }
 }
+exports.importVeteran = async (req, res) => {
+    try {
+
+        const excelData = excelToJson({
+            sourceFile: `./public/documents/uploads/veteran-import/${req.file.filename}`,
+            header: {
+                rows: 1
+            },
+            columnToKey: {
+                A: 'firstName',
+                B: 'lastName',
+                C: 'fullName',
+                D: 'lastFour',
+                E: 'email',
+                F: 'password',
+                G: 'userCategory',
+                H: 'country',
+                I: 'city',
+                J: 'state',
+                K: 'address',
+                L: 'phoneNumber',
+            }
+        });
+        const veteranData = excelData.sheet1
+            ? excelData.sheet1.map((data) => (
+                {
+                    ...data,
+                    userCategory: "63caa0348ceb169589e611c8", //Category Veteran ID
+                    status: "63861954b3b3ded1ee267309" //Status Active ID
+
+                }
+            ))
+            :
+            excelData.Sheet1.map((data) => (
+                {
+                    ...data,
+                    userCategory: "63caa0348ceb169589e611c8", //Category Veteran ID
+                    status: "63861954b3b3ded1ee267309" //Status Active ID
+
+                }
+            ));
+
+        const veterans = await service.importVeteranService(veteranData)
+
+        res.status(200).json({
+            status: "success",
+            data: veterans
+        })
+    } catch (error) {
+        res.status(400).json({
+            status: "failed1",
+            message: error?.message
+        })
+    }
+}
+
 
 exports.exportPatient = async (req, res) => {
     try {
@@ -322,6 +390,43 @@ exports.exportDoctor = async (req, res) => {
     }
 
 }
+exports.exportVeteran = async (req, res) => {
+    try {
+        const veterans = await service.getAllVeteranService();
+
+        const exceptUserID = veterans.map(({ userId, document, assignedVaProsthetic, ...other }) => other)
+        const userID = veterans.map(({ userId, ...other }) => userId)
+
+        const veteranDataPlain = exceptUserID.map((user, index) => ({
+            firstName: userID[index].firstName,
+            lastName: userID[index].lastName,
+            fullName: userID[index].fullName,
+            email: userID[index].email,
+            ...user
+        }))
+
+        const wb = XLSX.utils.book_new()
+        let temp = JSON.stringify(veteranDataPlain);
+        temp = JSON.parse(temp);
+        const ws = XLSX.utils.json_to_sheet(temp);
+        const down = './public/documents/uploads/veteran-import/export-veteran.xlsx'
+        XLSX.utils.book_append_sheet(wb, ws, "sheet1");
+        XLSX.writeFile(wb, down);
+
+
+        res.download("./public/documents/uploads/veteran-import/export-veteran.xlsx")
+
+    } catch (error) {
+
+        res.status(200).json({
+            status: "fail",
+            data: error
+        })
+    }
+
+}
+
+
 
 exports.loginUser = async (req, res) => {
     try {

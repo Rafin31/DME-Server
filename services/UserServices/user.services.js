@@ -469,6 +469,31 @@ exports.importDoctorService = async (data) => {
         session.endSession();
     }
 }
+exports.importVeteranService = async (data) => {
+
+    const session = await db.startSession();
+    try {
+        session.startTransaction();
+        const users = await User.insertMany(data, { session }) //will insert value which are correct
+
+        const veteranData = data.map((veteran, index) => (
+            {
+                ...veteran,
+                userId: users[index]._id
+            }
+        ))
+        await Veteran.insertMany(veteranData, { session }) //will insert value which are correct
+        await session.commitTransaction();
+        return users
+
+    } catch (error) {
+        await session.abortTransaction();
+        throw error
+    } finally {
+        session.endSession();
+    }
+}
+
 
 exports.getAllPatientService = async () => {
     const patients = await Patient.find({})
@@ -492,6 +517,14 @@ exports.getAllDoctorService = async () => {
         .select('-updatedAt -createdAt -__v -_id')
 
     return doctor
+}
+exports.getAllVeteranService = async () => {
+    const veteran = await Veteran.find({})
+        .lean()
+        .populate({ path: "userId", select: '-_id -updatedAt -createdAt -status -userCategory -password -__v' })
+        .select('-updatedAt -createdAt -__v -_id')
+
+    return veteran
 }
 
 
