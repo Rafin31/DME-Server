@@ -147,7 +147,7 @@ exports.createUserService = async (data) => {
             await Patient.create([patientData], { session })
         }
 
-        if (createdUserCategory?.category === "Staff") {
+        if (createdUserCategory?.category === "DME-Staff") {
             if (!data.inviteToken) {
                 throw new Error("You are not allowed to signup. Contact with DME-Supplier ")
             }
@@ -161,15 +161,16 @@ exports.createUserService = async (data) => {
 
             const staffData = {
                 userId: createdUser[0]?._id,
-                companyName: data?.companyName,
-                npiNumber: data?.npiNumber,
-                phoneNumber: data?.phoneNumber,
-                country: data?.country,
-                city: data?.city,
-                state: data?.state,
-                zip: data?.zip,
-                address: data?.address,
-                admin: dmeWithToken.userId._id
+                companyName: dmeWithToken?.companyName,
+                npiNumber: dmeWithToken?.npiNumber,
+                phoneNumber: dmeWithToken?.phoneNumber,
+                country: dmeWithToken?.country,
+                city: dmeWithToken?.city,
+                state: dmeWithToken?.state,
+                zip: dmeWithToken?.zip,
+                address: dmeWithToken?.address,
+                admin: dmeWithToken.userId._id,
+                banner: dmeWithToken?.banner
             }
             await Staff.create([staffData], { session })
             await Invited_Staff.deleteOne({ inviteToken: data.inviteToken })
@@ -238,7 +239,7 @@ exports.updateUserService = async (id, data) => {
         if (userCategory.category === "Patient") {
             await Patient.updateOne({ userId: user._id }, { $set: data }, { runValidators: true }).session(session)
         }
-        if (userCategory.category === "Staff") {
+        if (userCategory.category === "DME-Staff") {
             await Staff.updateOne({ userId: user._id }, { $set: data }, { runValidators: true }).session(session)
         }
         if (userCategory.category === "Veteran") {
@@ -270,7 +271,7 @@ exports.deleteUserService = async (id) => {
             throw new Error("User not found!")
         }
 
-        if (user.userCategory.category !== "DME-Supplier" && user.userCategory.category !== "Patient" && user.userCategory.category !== "Staff") {
+        if (user.userCategory.category !== "DME-Supplier" && user.userCategory.category !== "Patient" && user.userCategory.category !== "DME-Staff") {
             throw new Error("Not Allowed!")
         }
 
@@ -306,7 +307,7 @@ exports.deleteUserService = async (id) => {
 
             await Patient.deleteOne({ _id: patient._id }).session(session)
         }
-        if (user.userCategory.category === "Staff") {
+        if (user.userCategory.category === "DME-Staff") {
             const staff = await Staff.findOne({ userId: user._id })
                 .select('userId')
                 .session(session)
@@ -358,7 +359,7 @@ exports.findUserByIdService = async (id) => {
             .select('-_id -userId -updatedAt -createdAt -__v')
         user = { ...user, details }
     }
-    if (user.userCategory.category === "Staff") {
+    if (user.userCategory.category === "DME-Staff") {
         const details = await Staff.findOne({ userId: user._id })
             .select('-_id -userId -updatedAt -createdAt -__v')
             .populate({ path: "admin", select: "_id userId email " })

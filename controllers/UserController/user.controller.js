@@ -431,7 +431,6 @@ exports.exportVeteran = async (req, res) => {
 exports.loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
-
         if (!email || !password) {
             return res.status(400).json({
                 status: "failed",
@@ -479,6 +478,14 @@ exports.loginUser = async (req, res) => {
             category: category,
             permission: permission,
             token: token,
+        }
+
+        if (category === "DME-Staff") {
+            const staffAdmin = await service.findUserByIdService(user._id)
+            userPlainData._id = staffAdmin.details.admin[0]._id
+            userPlainData.email = staffAdmin.details.admin[0].email
+            userPlainData.staffId = others._id
+            userPlainData.staffEmail = others.email
         }
 
         // res.cookie("jwtToken", token, {

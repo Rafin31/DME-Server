@@ -1,4 +1,4 @@
-const staffService = require('../../services/StaffServices/staff.services');
+const staffService = require('../../services/DmeStaffServices/DmeStaff.services');
 
 exports.getAllStaff = async (req, res) => {
     try {

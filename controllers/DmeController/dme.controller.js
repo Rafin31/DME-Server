@@ -367,7 +367,7 @@ exports.inviteStaff = async (req, res) => {
         const jwtPlayLoad = {
             dmeSupplierEmail,
             invitedEmail: staffEmail,
-            invitationFor: "Staff"
+            invitationFor: "DME-Staff"
         }
 
         const token = generateToken(jwtPlayLoad)

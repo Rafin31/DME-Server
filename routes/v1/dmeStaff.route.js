@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router()
-const staffController = require('../../controllers/StaffController/staff.controller')
+const staffController = require('../../controllers/DmeStaffController/DmeStaff.controller')
 
 
-// api/v1/staff
+// api/v1/dme-staff
 router.route("/")
     .get(staffController.getAllStaff)
 
