@@ -143,6 +143,7 @@ exports.createUserService = async (data) => {
                 secondaryInsurance: data?.secondaryInsurance,
                 address: data?.address,
                 document: data?.document,
+                dmeSupplier: data?.dmeSupplier
             }
             await Patient.create([patientData], { session })
         }
@@ -194,6 +195,7 @@ exports.createUserService = async (data) => {
 
 exports.updateUserService = async (id, data) => {
     const session = await db.startSession();
+    let updateUser
     try {
         session.startTransaction();
         const user = await User.findById(id).session(session)
@@ -221,8 +223,15 @@ exports.updateUserService = async (id, data) => {
             }
 
         }
+        if (data.email) {
 
-        const updateUser = await User.updateOne({ _id: id }, { $set: data }, { runValidators: true }).session(session)
+            const user = await User.findById(id);
+            user.email = data.email;
+            await user.save();
+
+        } else {
+            updateUser = await User.updateOne({ _id: id }, { $set: data }, { runValidators: true }).session(session)
+        }
 
         const userCategory = await UserCategory.findById(user?.userCategory).select("-_id category").session(session)
 

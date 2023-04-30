@@ -451,7 +451,7 @@ exports.loginUser = async (req, res) => {
         const isPasswordValid = user.comparePassword(password, user.password)
 
         if (!isPasswordValid) {
-            return res.status(403).json({
+            return res.status(401).json({
                 status: "failed",
                 message: "Email or password did not matched!"
             })
@@ -491,9 +491,10 @@ exports.loginUser = async (req, res) => {
         // res.cookie("jwtToken", token, {
         //     expires: new Date(Date.now() + 25892000000),
         //     httpOnly: true,
-        //     secure: true,
-        //     sameSite: "none",
+        //     secure: false,
+        //     sameSite: "strict",
         // })
+
 
         res.status(200).json({
             status: "Success",

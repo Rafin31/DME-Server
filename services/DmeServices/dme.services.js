@@ -18,6 +18,18 @@ const { db } = require("../../model/Task.model")
 const { sendMail } = require('../../utils/sentEmail');
 
 
+exports.getActiveDMEService = async () => {
+    const activeDME = await User.find({
+        $and: [
+            { userCategory: "63861b354e45673948bb7c9d" },
+            { status: "63861954b3b3ded1ee267309" }
+        ]
+    }).lean()
+        .select("_id fullName email ")
+
+    return activeDME
+}
+
 exports.findDmeByEmail = async (email) => {
     let user = await User.findOne({ email: email })
         .lean()

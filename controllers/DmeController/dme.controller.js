@@ -4,6 +4,25 @@ const crypto = require('crypto');
 const { generateToken } = require('../../utils/generateInviteToken');
 const multer = require('multer');
 
+
+exports.getActiveDME = async (req, res) => {
+    try {
+        const activeDME = await dmeService.getActiveDMEService()
+
+        return res.status(200).json({
+            status: 'success',
+            data: activeDME
+        })
+
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error
+        })
+    }
+}
+
+
 exports.addTask = async (req, res) => {
     try {
         const task = await dmeService.addTaskService(req.body)

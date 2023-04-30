@@ -15,3 +15,20 @@ exports.getAllPatient = async (req, res) => {
         })
     }
 }
+
+
+exports.getAllPatientByDME = async (req, res) => {
+    try {
+        const { dmeSupplier } = req.query
+        const patient = await patientService.getAllPatientByDMEService(dmeSupplier)
+        return res.status(200).json({
+            status: 'success',
+            data: patient
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error.message
+        })
+    }
+}

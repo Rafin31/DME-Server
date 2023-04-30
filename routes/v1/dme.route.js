@@ -6,6 +6,10 @@ const uploadDocument = require('../../middlewares/importDocument')
 
 
 // api/v1/dme
+
+router.route('/active-dme')
+    .get(dmeController.getActiveDME)
+
 router.route('/task')
     .post(dmeController.addTask)
     .get(dmeController.getTask)

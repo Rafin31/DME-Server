@@ -55,6 +55,11 @@ const patientSchema = mongoose.Schema({
         type: String,
         trim: true,
     },
+    dmeSupplier: {
+        type: ObjectId,
+        ref: "User",
+        required: [true, "DME Supplier required"]
+    },
     doctor: {
         type: [ObjectId],
         ref: "User"

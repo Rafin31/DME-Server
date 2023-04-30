@@ -9,6 +9,11 @@ router.route("/")
     .get(patientController.getAllPatient)
 
 
+router.route("/byDmeSupplier")
+    .get(patientController.getAllPatientByDME)
+
+
+
 module.exports = router
 
 
