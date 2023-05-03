@@ -28,5 +28,7 @@ router.route("/orderNote/:id")
 router.route("/:id")
     .get(orderController.getOrderById)
     .patch(orderController.updateOrder)
+    .delete(orderController.deleteOrder)
+
 
 module.exports = router

@@ -165,6 +165,26 @@ exports.updateOrder = async (req, res) => {
     }
 }
 
+
+exports.deleteOrder = async (req, res) => {
+    try {
+        const { id } = req.params
+        const deleteOrder = await orderService.deleteOrderService(id)
+
+        return res.status(200).json({
+            status: 'success',
+            data: deleteOrder
+        })
+
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: "Something Went Wrong"
+        })
+    }
+
+}
+
 exports.insertOrderNote = async (req, res) => {
     try {
         const { id } = req.params

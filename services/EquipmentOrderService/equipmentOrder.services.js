@@ -1,6 +1,7 @@
 const EquipmentOrder = require("../../model/EquipmentOrder.model")
 const Equipment_Order_Note = require("../../model/EquipmentOrderNote.model")
 const Patient = require("../../model/Patient.model")
+const Document = require('../../model/Documents.model');
 const { findUserByIdService } = require("../UserServices/user.services")
 
 exports.createOrderService = async (data) => {
@@ -122,6 +123,22 @@ exports.updateOrderService = async (data, id) => {
     const update = await EquipmentOrder.updateOne({ _id: id }, { $set: data }, { runValidators: true })
     return update
 }
+
+exports.deleteOrderService = async (id) => {
+
+    const order = await EquipmentOrder.findById(id)
+    const documents = order.document
+
+    for (const id of documents) {
+        await Document.findByIdAndDelete(id)
+    }
+    await Equipment_Order_Note.deleteMany({ orderId: id })
+
+    const deleteOrder = await EquipmentOrder.findByIdAndDelete(id)
+    return deleteOrder
+
+}
+
 
 //notes
 exports.insertOrderNoteService = async (data, orderId) => {
