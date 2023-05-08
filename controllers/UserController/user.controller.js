@@ -68,6 +68,13 @@ exports.getUserByID = async (req, res) => {
         const { id } = req.params
         const users = await service.findUserByIdService(id)
 
+        if (!users) {
+            res.status(404).json({
+                status: "failed",
+                message: "No user found!"
+            })
+        }
+
         const { userCategory, ...exceptUserCategory } = users
         const { status } = users
         const { details } = users
@@ -168,6 +175,7 @@ exports.importPatient = async (req, res) => {
                 N: 'primaryInsurance',
                 O: 'secondaryInsurance',
                 P: "phoneNumber",
+                Q: "dmeSupplier",
             }
         });
 

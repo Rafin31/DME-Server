@@ -359,7 +359,7 @@ exports.findUserByIdService = async (id) => {
         .select('-password -updatedAt -createdAt -__v');
 
     if (!user) {
-        throw new Error("User not found!")
+        return user
     }
 
     if (user.userCategory.category === "DME-Supplier") {

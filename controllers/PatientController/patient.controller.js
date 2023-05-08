@@ -32,3 +32,21 @@ exports.getAllPatientByDME = async (req, res) => {
         })
     }
 }
+
+
+exports.deletePatientByID = async (req, res) => {
+    try {
+        const { id } = req.params
+        const deletedPatient = await patientService.deletePatientByIDService(id)
+
+        return res.status(200).json({
+            status: 'success',
+            data: deletedPatient
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error.message
+        })
+    }
+}

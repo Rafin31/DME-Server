@@ -13,6 +13,8 @@ router.route("/byDmeSupplier")
     .get(patientController.getAllPatientByDME)
 
 
+router.route("/:id")
+    .delete(patientController.deletePatientByID)
 
 module.exports = router
 
