@@ -125,6 +125,33 @@ exports.updateRepairOrder = async (req, res) => {
     }
 }
 
+exports.deleteOrder = async (req, res) => {
+
+    try {
+        const { id } = req.params
+        const deleteOrder = await repairOrderService.deleteOrderService(id)
+
+        if (!deleteOrder) {
+            return res.status(200).json({
+                status: 'success',
+                data: "No order Found with this ID"
+            })
+        }
+
+        return res.status(200).json({
+            status: 'success',
+            data: deleteOrder
+        })
+
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: "Something Went Wrong"
+        })
+    }
+
+}
+
 
 exports.insertNotesByRepairOrderId = async (req, res) => {
     try {
@@ -196,6 +223,23 @@ exports.getArchiveRepairOrder = async (req, res) => {
             data: order
         })
 
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error.message
+        })
+    }
+}
+
+exports.publishNotesByOrderId = async (req, res) => {
+    try {
+        const { id } = req.params
+        const notes = await repairOrderService.publishNotesByOrderIdService(id, req.body)
+
+        return res.status(200).json({
+            status: 'success',
+            data: notes
+        })
     } catch (error) {
         return res.status(400).json({
             status: 'fail',

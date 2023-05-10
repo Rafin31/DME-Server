@@ -18,6 +18,7 @@ router.route('/archive-orders/:id')
 router.route('/veteran-order-note/:id')
     .get(veteranOrderController.getNotesByVeteranOrderId)
     .post(veteranOrderController.insertNotesByVeteranOrderId)
+    .delete(veteranOrderController.deleteVeteranOrderNoteById)
 
 router.route('/creator/:id')
     .get(veteranOrderController.getVeteranOrderByCreatorId)
@@ -28,6 +29,7 @@ router.route('/veteran/:id')
 router.route('/:id')
     .get(veteranOrderController.getVeteranOrderById)
     .patch(veteranOrderController.updateVeteranOrder)
+    .delete(veteranOrderController.deleteOrder)
 
 
 module.exports = router

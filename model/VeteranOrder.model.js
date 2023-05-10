@@ -12,7 +12,7 @@ const VeteranOrderSchema = mongoose.Schema({
     veteranId: {
         type: ObjectId,
         ref: "User",
-        required: ['true', "Patient Id is missing"]
+        required: ['true', "Veteran Id is missing"]
     },
     description: {
         type: String,

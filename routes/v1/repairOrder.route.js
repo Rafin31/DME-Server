@@ -26,10 +26,14 @@ router.route('/repair-order-note/:id')
     .get(repairOrderController.getNotesByRepairOrderId)
     .post(repairOrderController.insertNotesByRepairOrderId)
 
+router.route("/publish-notes/:id")
+    .post(repairOrderController.publishNotesByOrderId)
+
 
 router.route('/:id')
     .get(repairOrderController.getRepairOrderById)
     .patch(repairOrderController.updateRepairOrder)
+    .delete(repairOrderController.deleteOrder)
 
 
 module.exports = router

@@ -25,6 +25,9 @@ router.route("/orderNote/:id")
     .get(orderController.getNotesByOrderId)
     .post(orderController.insertOrderNote)
 
+router.route("/publish-notes/:id")
+    .post(orderController.publishNotesByOrderId)
+
 router.route("/:id")
     .get(orderController.getOrderById)
     .patch(orderController.updateOrder)

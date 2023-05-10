@@ -61,12 +61,15 @@ exports.getVeteranOrderById = async (req, res) => {
 
 exports.getVeteranOrderByCreatorId = async (req, res) => {
     try {
+
         const { id } = req.params
         const veteranOrder = await veteranOrderService.getVeteranOrderByCreatorIdService(id)
 
         for (const v of veteranOrder) {
-            const user = await userService.findUserByIdService(v.veteranId._id);
-            v.veteranId.lastFour = user.details.lastFour;
+            if (v.veteranId) {
+                const user = await userService.findUserByIdService(v.veteranId._id);
+                v.veteranId.lastFour = user.details.lastFour;
+            }
         }
 
         if (!veteranOrder || veteranOrder.length === 0) {
@@ -136,6 +139,33 @@ exports.updateVeteranOrder = async (req, res) => {
     }
 }
 
+exports.deleteOrder = async (req, res) => {
+
+    try {
+        const { id } = req.params
+        const deleteOrder = await veteranOrderService.deleteOrderService(id)
+
+        if (!deleteOrder) {
+            return res.status(200).json({
+                status: 'success',
+                data: "No order Found with this ID"
+            })
+        }
+
+        return res.status(200).json({
+            status: 'success',
+            data: deleteOrder
+        })
+
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: "Something Went Wrong"
+        })
+    }
+
+}
+
 exports.insertNotesByVeteranOrderId = async (req, res) => {
     try {
         const { id } = req.params
@@ -161,6 +191,23 @@ exports.getNotesByVeteranOrderId = async (req, res) => {
         return res.status(200).json({
             status: 'success',
             data: notes
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error.message
+        })
+    }
+}
+
+exports.deleteVeteranOrderNoteById = async (req, res) => {
+    try {
+        const { id } = req.params
+        const deleteNotes = await veteranOrderService.deleteVeteranOrderNoteByIdService(id)
+
+        return res.status(200).json({
+            status: 'success',
+            data: deleteNotes
         })
     } catch (error) {
         return res.status(400).json({

@@ -62,8 +62,8 @@ exports.getOrderByPatient = async (req, res) => {
         const order = await orderService.getOrderByPatientService(patientId)
 
         if (order.length === 0) {
-            return res.status(401).json({
-                status: 'fail',
+            return res.status(200).json({
+                status: 'success',
                 data: "No order found!"
             })
         }
@@ -209,6 +209,23 @@ exports.getNotesByOrderId = async (req, res) => {
         const { id } = req.params
         const notes = await orderService.getNotesByOrderIdService(id)
 
+
+        return res.status(200).json({
+            status: 'success',
+            data: notes
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error.message
+        })
+    }
+}
+
+exports.publishNotesByOrderId = async (req, res) => {
+    try {
+        const { id } = req.params
+        const notes = await orderService.publishNotesByOrderIdService(id, req.body)
 
         return res.status(200).json({
             status: 'success',

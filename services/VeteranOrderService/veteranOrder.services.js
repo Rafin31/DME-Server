@@ -28,13 +28,6 @@ exports.getAllVeteranOrderService = async () => {
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "veteranId", select: "_id fullName email" })
-        .populate({
-            path: "notes",
-            populate: {
-                path: 'writerId',
-                select: "_id fullName email"
-            }
-        })
         .select('-__v -createdAt -updatedAt')
 
     return veteranOrder
@@ -47,13 +40,6 @@ exports.getVeteranOrderbyIdService = async (id) => {
         .lean()
         .populate({ path: "dmeSupplierId", select: "fullName email" })
         .populate({ path: "veteranId", select: "fullName email" })
-        .populate({
-            path: "notes",
-            populate: {
-                path: 'writerId',
-                select: "_id fullName email"
-            }
-        })
         .populate({ path: "document", select: "-updatedAt -__v" })
         .select('-__v -createdAt -updatedAt')
 
@@ -63,19 +49,12 @@ exports.getVeteranOrderbyIdService = async (id) => {
 
 exports.getVeteranOrderByCreatorIdService = async (id) => {
     let veteran = []
+    console.log(id)
     const order = await VeteranOrder.find({ $and: [{ status: { $ne: "Archived" } }, { dmeSupplierId: id }] })
         .lean()
-        .populate({ path: "dmeSupplierId", select: "_id fullName email" })
-        .populate({ path: "veteranId", select: "_id firstName lastName  fullName email" })
-        .populate({
-            path: "notes",
-            populate: {
-                path: 'writerId',
-                select: "_id fullName email"
-            }
-        })
+        .populate({ path: "dmeSupplierId", select: "fullName email" })
+        .populate({ path: "veteranId", select: "firstName lastName  fullName email" })
         .select('-__v -updatedAt')
-
     return order
 
 }
@@ -85,13 +64,6 @@ exports.getVeteranOrderByVeteranService = async (id) => {
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "veteranId", select: "_id fullName email" })
-        .populate({
-            path: "notes",
-            populate: {
-                path: 'writerId',
-                select: "_id fullName email"
-            }
-        })
         .select('-__v -createdAt -updatedAt')
 
     return order
@@ -112,6 +84,25 @@ exports.updateVeteranOrderService = async (data, id) => {
     //     await VeteranOrder.updateOne({ _id: id }, { $set: { notes: insertNote._id } }, { runValidators: true })
     // }
 }
+
+exports.deleteOrderService = async (id) => {
+
+    const order = await VeteranOrder.findById(id)
+
+    if (!order) return order
+
+    const documents = order.document
+
+    for (const id of documents) {
+        await Document.findByIdAndDelete(id)
+    }
+    await Veteran_Order_Note.deleteMany({ orderId: id })
+
+    const deleteOrder = await VeteranOrder.findByIdAndDelete(id)
+    return deleteOrder
+
+}
+
 
 exports.insertVeteranOrderNoteByIdService = async (data, orderId) => {
     let insertNote = await Veteran_Order_Note.create({
@@ -149,18 +140,17 @@ exports.getVeteranOrderNoteByIdService = async (orderId) => {
     return notes
 }
 
+exports.deleteVeteranOrderNoteByIdService = async (id) => {
+    const deleted = await Veteran_Order_Note.deleteOne({ _id: id })
+    return deleted
+}
+
+
 exports.getVeteranOrderByStatusService = async (status) => {
     const order = await VeteranOrder.find({ status: status })
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "veteranId", select: "_id fullName email" })
-        .populate({
-            path: "notes",
-            populate: {
-                path: 'writerId',
-                select: "_id fullName email"
-            }
-        })
         .select('-__v -createdAt -updatedAt')
 
     return order
@@ -172,13 +162,6 @@ exports.getArchiveVeteranOrderService = async (id) => {
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "veteranId", select: "_id fullName email" })
-        .populate({
-            path: "notes",
-            populate: {
-                path: 'writerId',
-                select: "_id fullName email"
-            }
-        })
         .select('-__v -updatedAt')
 
     return order

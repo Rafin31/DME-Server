@@ -71,7 +71,7 @@ exports.getOrderByPatientService = async (id) => {
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "patientId", select: "_id fullName email" })
-        .select('-__v -createdAt -updatedAt')
+        .select('-__v -updatedAt')
 
     if (order.length !== 0) {
         for (const or of order) {
@@ -179,4 +179,15 @@ exports.getNotesByOrderIdService = async (orderId) => {
         }
     }
     return notes
+}
+
+exports.publishNotesByOrderIdService = async (orderId, data) => {
+    let insertNote = await Equipment_Order_Note.create({
+        writerId: data.writerId,
+        orderId: orderId,
+        notes: data.notes
+    })
+
+    return insertNote;
+
 }

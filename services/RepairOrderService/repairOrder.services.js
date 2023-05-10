@@ -93,7 +93,7 @@ exports.getRepairOrderByDmePatientService = async (id) => {
                 select: "_id fullName email"
             }
         })
-        .select('-__v -createdAt -updatedAt')
+        .select('-__v -updatedAt')
 
     if (order.length !== 0) {
         for (const or of order) {
@@ -121,6 +121,25 @@ exports.updateRepairOrderService = async (data, id) => {
     //     await RepairOrder.updateOne({ _id: id }, { $set: { notes: insertNote._id } }, { runValidators: true })
     // }
 }
+
+exports.deleteOrderService = async (id) => {
+
+    const order = await RepairOrder.findById(id)
+
+    if (!order) return order
+
+    const documents = order.document
+
+    for (const id of documents) {
+        await Document.findByIdAndDelete(id)
+    }
+    await Repair_Order_Note.deleteMany({ orderId: id })
+
+    const deleteOrder = await RepairOrder.findByIdAndDelete(id)
+    return deleteOrder
+
+}
+
 
 
 exports.insertRepairOrderNoteService = async (data, orderId) => {
@@ -209,3 +228,16 @@ exports.getArchiveRepairOrderService = async (id) => {
 
     return order
 }
+
+
+exports.publishNotesByOrderIdService = async (orderId, data) => {
+    let insertNote = await Repair_Order_Note.create({
+        writerId: data.writerId,
+        orderId: orderId,
+        notes: data.notes
+    })
+
+    return insertNote;
+
+}
+
