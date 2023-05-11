@@ -2,6 +2,7 @@
 const Patient = require("../../model/Patient.model")
 const RepairOrder = require("../../model/RepairOrder.model")
 const Repair_Order_Note = require("../../model/RepairOrderNote.model")
+const Document = require("../../model/Documents.model")
 const { findUserByIdService } = require("../UserServices/user.services")
 
 
@@ -27,13 +28,6 @@ exports.getAllRepairOrderService = async () => {
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "patientId", select: "_id fullName email" })
-        .populate({
-            path: "notes",
-            populate: {
-                path: 'writerId',
-                select: "_id fullName email"
-            }
-        })
         .select('-__v -createdAt -updatedAt')
 
     return repairOrder
@@ -44,13 +38,6 @@ exports.getRepairOrderbyIdService = async (id) => {
         .lean()
         .populate({ path: "dmeSupplierId", select: "fullName email" })
         .populate({ path: "patientId", select: "fullName email" })
-        .populate({
-            path: "notes",
-            populate: {
-                path: 'writerId',
-                select: "_id fullName email"
-            }
-        })
         .populate({ path: "document", select: "-updatedAt -__v" })
         .select('-__v -createdAt -updatedAt')
 
@@ -62,14 +49,9 @@ exports.getRepairOrderByDmeSupplierService = async (id) => {
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "patientId", select: "_id fullName email" })
-        .populate({
-            path: "notes",
-            populate: {
-                path: 'writerId',
-                select: "_id fullName email"
-            }
-        })
         .select('-__v -updatedAt')
+
+
 
     if (order.length !== 0) {
         for (const or of order) {
@@ -86,13 +68,6 @@ exports.getRepairOrderByDmePatientService = async (id) => {
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "patientId", select: "_id fullName email" })
-        .populate({
-            path: "notes",
-            populate: {
-                path: 'writerId',
-                select: "_id fullName email"
-            }
-        })
         .select('-__v -updatedAt')
 
     if (order.length !== 0) {
@@ -126,6 +101,7 @@ exports.deleteOrderService = async (id) => {
 
     const order = await RepairOrder.findById(id)
 
+
     if (!order) return order
 
     const documents = order.document
@@ -133,7 +109,10 @@ exports.deleteOrderService = async (id) => {
     for (const id of documents) {
         await Document.findByIdAndDelete(id)
     }
+
     await Repair_Order_Note.deleteMany({ orderId: id })
+
+
 
     const deleteOrder = await RepairOrder.findByIdAndDelete(id)
     return deleteOrder
@@ -184,13 +163,6 @@ exports.getRepairOrderByStatusService = async (status) => {
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "patientId", select: "_id fullName email" })
-        .populate({
-            path: "notes",
-            populate: {
-                path: 'writerId',
-                select: "_id fullName email"
-            }
-        })
         .select('-__v -createdAt -updatedAt')
 
 
@@ -210,13 +182,6 @@ exports.getArchiveRepairOrderService = async (id) => {
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
         .populate({ path: "patientId", select: "_id fullName email" })
-        .populate({
-            path: "notes",
-            populate: {
-                path: 'writerId',
-                select: "_id fullName email"
-            }
-        })
         .select('-__v -updatedAt')
 
     if (order.length !== 0) {

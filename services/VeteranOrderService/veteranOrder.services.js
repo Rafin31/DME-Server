@@ -49,7 +49,6 @@ exports.getVeteranOrderbyIdService = async (id) => {
 
 exports.getVeteranOrderByCreatorIdService = async (id) => {
     let veteran = []
-    console.log(id)
     const order = await VeteranOrder.find({ $and: [{ status: { $ne: "Archived" } }, { dmeSupplierId: id }] })
         .lean()
         .populate({ path: "dmeSupplierId", select: "fullName email" })

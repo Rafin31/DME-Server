@@ -138,6 +138,8 @@ exports.deleteOrder = async (req, res) => {
             })
         }
 
+
+
         return res.status(200).json({
             status: 'success',
             data: deleteOrder
@@ -146,7 +148,7 @@ exports.deleteOrder = async (req, res) => {
     } catch (error) {
         return res.status(400).json({
             status: 'fail',
-            data: "Something Went Wrong"
+            data: error
         })
     }
 
