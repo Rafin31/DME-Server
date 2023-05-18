@@ -2,9 +2,19 @@ const VeteranOrder = require("../../model/VeteranOrder.model")
 const Veteran = require("../../model/Veteran.model")
 const Veteran_Order_Note = require("../../model/VeteranOrderNote.model")
 const { findUserByIdService } = require("../UserServices/user.services")
+const moment = require('moment');
 
 
 exports.createVeteranOrderService = async (data) => {
+    if (data.firstAttempt) {
+        data.firstAttempt = moment.utc(data.firstAttempt, 'M/D/YYYY').format('MM-DD-YYYY')
+    }
+    if (data.secondAttempt) {
+        data.secondAttempt = moment.utc(data.secondAttempt, 'M/D/YYYY').format('MM-DD-YYYY')
+    }
+    if (data.schedule) {
+        data.schedule = moment.utc(data.schedule, 'M/D/YYYY').format('MM-DD-YYYY')
+    }
 
     const veteranOrder = await VeteranOrder.create(data)
     return veteranOrder
@@ -70,6 +80,15 @@ exports.getVeteranOrderByVeteranService = async (id) => {
 
 exports.updateVeteranOrderService = async (data, id) => {
 
+    if (data.firstAttempt) {
+        data.firstAttempt = moment.utc(data.firstAttempt, 'M/D/YYYY').format('MM-DD-YYYY')
+    }
+    if (data.secondAttempt) {
+        data.secondAttempt = moment.utc(data.secondAttempt, 'M/D/YYYY').format('MM-DD-YYYY')
+    }
+    if (data.schedule) {
+        data.schedule = moment.utc(data.schedule, 'M/D/YYYY').format('MM-DD-YYYY')
+    }
     const update = await VeteranOrder.updateOne({ _id: id }, { $set: data }, { runValidators: true })
     return update
 

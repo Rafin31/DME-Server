@@ -12,7 +12,9 @@ const Invited_Staff = require("../../model/InvitedStaff.model")
 const Invited_VA_Prosthetics = require("../../model/InvitedVaProsthetics.model")
 const { db } = require('../../model/User.model');
 const bcrypt = require('bcryptjs');
+const moment = require('moment');
 const { sendMail } = require('../../utils/sentEmail');
+
 
 // https://www.ultimateakash.com/blog-details/IiwzQGAKYAo=/How-to-implement-Transactions-in-Mongoose-&-Node.Js-(Express)
 
@@ -133,7 +135,7 @@ exports.createUserService = async (data) => {
             const patientData = {
                 userId: createdUser[0]?._id,
                 gender: data?.gender,
-                dob: data?.dob,
+                dob: data?.dob ? moment.utc(data.dob, 'M/D/YYYY').format('MM-DD-YYYY') : "",
                 weight: data?.weight,
                 phoneNumber: data?.phoneNumber,
                 country: data?.country,
@@ -246,6 +248,10 @@ exports.updateUserService = async (id, data) => {
             await DME_Supplier.updateOne({ userId: user._id }, { $set: data }, { runValidators: true }).session(session)
         }
         if (userCategory.category === "Patient") {
+            if (data.dob) {
+                const dobMoment = moment.utc(data.dob, 'M/D/YYYY');
+                data.dob = dobMoment.format('MM-DD-YYYY');
+            }
             await Patient.updateOne({ userId: user._id }, { $set: data }, { runValidators: true }).session(session)
         }
         if (userCategory.category === "DME-Staff") {
