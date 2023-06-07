@@ -48,7 +48,7 @@ exports.getRepairOrderByDmeSupplierService = async (id) => {
     const order = await RepairOrder.find({ $and: [{ status: { $ne: "Archived" } }, { dmeSupplierId: id }] })
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
-        .populate({ path: "patientId", select: "_id fullName email" })
+        .populate({ path: "patientId", select: "_id fullName firstName lastName email" })
         .select('-__v -updatedAt')
 
 

@@ -31,7 +31,7 @@ const patientSchema = mongoose.Schema({
         type: String,
         trim: true,
     },
-    country: {
+    zip: {
         type: String,
         trim: true,
     },

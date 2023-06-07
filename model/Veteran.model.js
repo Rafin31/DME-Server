@@ -14,15 +14,15 @@ const veteranSchema = mongoose.Schema({
         type: String,
         trim: true,
     },
-    country: {
+    zip: {
         type: String,
         trim: true,
-        // required: [true, "Country is required"]
+        required: [true, "Zip is required"]
     },
     city: {
         type: String,
         trim: true,
-        required: [true, "CIty is required"]
+        required: [true, "City is required"]
     },
     state: {
         type: String,

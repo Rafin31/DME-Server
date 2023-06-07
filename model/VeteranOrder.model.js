@@ -46,6 +46,10 @@ const VeteranOrderSchema = mongoose.Schema({
         type: String,
         trim: true
     },
+    progress: {
+        type: String,
+        trim: true
+    },
     status: {
         type: String,
         required: ['true', "Order Status is missing"],

@@ -25,7 +25,13 @@ exports.getActiveDMEService = async () => {
             { status: "63861954b3b3ded1ee267309" }
         ]
     }).lean()
-        .select("_id fullName email ")
+        .select("fullName email")
+
+    for (const ad of activeDME) {
+        const dme = await DME_Supplier.find({ userId: ad._id }).select("companyName")
+        ad.companyName = dme[0].companyName
+        console.log(ad)
+    }
 
     return activeDME
 }

@@ -98,6 +98,7 @@ exports.createUserService = async (data) => {
                 country: data?.country,
                 city: data?.city,
                 state: data?.state,
+                zip: data?.zip,
                 address: data?.address,
                 document: data?.document,
                 lastFour: data?.lastFour
@@ -141,6 +142,7 @@ exports.createUserService = async (data) => {
                 country: data?.country,
                 city: data?.city,
                 state: data?.state,
+                zip: data?.zip,
                 primaryInsurance: data?.primaryInsurance,
                 secondaryInsurance: data?.secondaryInsurance,
                 address: data?.address,
@@ -206,6 +208,8 @@ exports.updateUserService = async (id, data) => {
             throw new Error("User not found!")
         }
 
+        const userCategory = await UserCategory.findById(user?.userCategory).select("-_id category").session(session)
+
         if (data.password || data.newPassword) {
             if (data.password && data.newPassword) {
                 const isPasswordValid = user.comparePassword(data.password, user.password)
@@ -216,6 +220,14 @@ exports.updateUserService = async (id, data) => {
                 const salt = bcrypt.genSaltSync(10);
                 const hashedPassword = bcrypt.hashSync(data.newPassword, salt);
                 const { password, newPassword, ...others } = data
+                data = {
+                    ...others,
+                    password: hashedPassword
+                }
+            } if (data.password && (userCategory.category === "Patient" || userCategory.category === "Veteran")) {
+                const salt = bcrypt.genSaltSync(10);
+                const hashedPassword = bcrypt.hashSync(data.password, salt);
+                const { password, ...others } = data
                 data = {
                     ...others,
                     password: hashedPassword
@@ -234,8 +246,6 @@ exports.updateUserService = async (id, data) => {
         } else {
             updateUser = await User.updateOne({ _id: id }, { $set: data }, { runValidators: true }).session(session)
         }
-
-        const userCategory = await UserCategory.findById(user?.userCategory).select("-_id category").session(session)
 
         if (userCategory.category === "Doctor") {
             await Doctor.updateOne({ userId: user._id }, { $set: data }, { runValidators: true }).session(session)
