@@ -7,4 +7,8 @@ const veteranController = require('../../controllers/VeteranController/veteran.c
 router.route('/')
     .get(veteranController.getAllVeteran)
 
+router.route("/byDmeSupplier")
+    .get(veteranController.getAllVeteranByDME)
+
+
 module.exports = router

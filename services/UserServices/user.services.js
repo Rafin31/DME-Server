@@ -101,7 +101,8 @@ exports.createUserService = async (data) => {
                 zip: data?.zip,
                 address: data?.address,
                 document: data?.document,
-                lastFour: data?.lastFour
+                lastFour: data?.lastFour,
+                dmeSupplier: data?.dmeSupplier
             }
             await Veteran.create([veteranData], { session })
         }
@@ -528,6 +529,18 @@ exports.getAllPatientService = async () => {
         .select('-updatedAt -createdAt -__v -_id')
     return patients
 }
+exports.getAllPatientByDMEService = async (dmeSupplier) => {
+    const patients = Patient.find({
+        $and: [
+            { status: { $eq: "63861954b3b3ded1ee267309" } },//status active
+            { dmeSupplier: dmeSupplier }
+        ]
+    })
+        .lean()
+        .populate({ path: "userId", select: '-_id -updatedAt -createdAt -status -userCategory -password -__v' })
+        .select('-updatedAt -createdAt -__v -_id')
+    return patients
+}
 exports.getAllDmeSupplierService = async () => {
     const dme = await DME_Supplier.find({})
         .lean()
@@ -546,6 +559,19 @@ exports.getAllDoctorService = async () => {
 }
 exports.getAllVeteranService = async () => {
     const veteran = await Veteran.find({})
+        .lean()
+        .populate({ path: "userId", select: '-_id -updatedAt -createdAt -status -userCategory -password -__v' })
+        .select('-updatedAt -createdAt -__v -_id')
+
+    return veteran
+}
+exports.getAllVeteranByDMEService = async (dmeSupplier) => {
+    const veteran = Veteran.find({
+        $and: [
+            { status: { $eq: "63861954b3b3ded1ee267309" } },//status active
+            { dmeSupplier: dmeSupplier }
+        ]
+    })
         .lean()
         .populate({ path: "userId", select: '-_id -updatedAt -createdAt -status -userCategory -password -__v' })
         .select('-updatedAt -createdAt -__v -_id')

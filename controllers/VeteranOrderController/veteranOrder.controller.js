@@ -251,6 +251,24 @@ exports.getArchiveVeteranOrder = async (req, res) => {
     }
 }
 
+exports.publishNotesByOrderId = async (req, res) => {
+    try {
+        const { id } = req.params
+        const notes = await veteranOrderService.publishNotesByOrderIdService(id, req.body)
+
+        return res.status(200).json({
+            status: 'success',
+            data: notes
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error.message
+        })
+    }
+}
+
+
 
 
 

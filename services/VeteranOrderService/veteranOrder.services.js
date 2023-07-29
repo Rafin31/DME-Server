@@ -72,8 +72,17 @@ exports.getVeteranOrderByVeteranService = async (id) => {
     const order = await VeteranOrder.find({ veteranId: id })
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
-        .populate({ path: "veteranId", select: "_id fullName email" })
-        .select('-__v -createdAt -updatedAt')
+        .populate({ path: "veteranId", })
+        .select('-__v')
+
+
+    // order.veteranId._id
+
+    for (const or of order) {
+        const veteran = await Veteran.find({ userId: or.veteranId._id }).select("lastFour")
+        or.veteranId.lastFour = veteran[0].lastFour
+    }
+
 
     return order
 }
@@ -179,9 +188,27 @@ exports.getArchiveVeteranOrderService = async (id) => {
     const order = await VeteranOrder.find({ $and: [{ status: "Archived" }, { veteranId: id }] })
         .lean()
         .populate({ path: "dmeSupplierId", select: "_id fullName email" })
-        .populate({ path: "veteranId", select: "_id fullName email" })
+        .populate({ path: "veteranId", select: "_id firstName lastName fullName email" })
         .select('-__v -updatedAt')
 
+
+    for (const or of order) {
+        const veteran = await Veteran.find({ userId: or.veteranId._id }).select("lastFour")
+        or.veteranId.lastFour = veteran[0].lastFour
+    }
+
     return order
+}
+
+
+exports.publishNotesByOrderIdService = async (orderId, data) => {
+    let insertNote = await Veteran_Order_Note.create({
+        writerId: data.writerId,
+        orderId: orderId,
+        notes: data.notes
+    })
+
+    return insertNote;
+
 }
 

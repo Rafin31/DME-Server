@@ -1,5 +1,7 @@
 const User = require("../../model/User.model")
 const service = require("../../services/UserServices/user.services")
+const patientService = require("../../services/PatientServices/patient.services")
+const veteranService = require("../../services/VeteranService/veteran.services")
 const { generateToken } = require("../../utils/generateToken")
 const crypto = require('crypto');
 const XLSX = require('xlsx');
@@ -292,6 +294,7 @@ exports.importVeteran = async (req, res) => {
                 J: 'state',
                 K: 'address',
                 L: 'phoneNumber',
+                M: "dmeSupplier"
             }
         });
         const veteranData = excelData.sheet1
@@ -330,7 +333,8 @@ exports.importVeteran = async (req, res) => {
 
 exports.exportPatient = async (req, res) => {
     try {
-        const patients = await service.getAllPatientService();
+        const { dmeSupplier } = req.query
+        const patients = await service.getAllPatientByDMEService(dmeSupplier)
 
         const exceptUserID = patients.map(({ userId, document, doctor, therapist, ...other }) => other)
         const userID = patients.map(({ userId, ...other }) => userId)
@@ -400,7 +404,9 @@ exports.exportDoctor = async (req, res) => {
 }
 exports.exportVeteran = async (req, res) => {
     try {
-        const veterans = await service.getAllVeteranService();
+        const { dmeSupplier } = req.query
+
+        const veterans = await service.getAllVeteranByDMEService(dmeSupplier);
 
         const exceptUserID = veterans.map(({ userId, document, assignedVaProsthetic, ...other }) => other)
         const userID = veterans.map(({ userId, ...other }) => userId)

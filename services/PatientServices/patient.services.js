@@ -30,7 +30,6 @@ exports.getAllPatientByDMEService = async (dmeSupplier) => {
     return patient
 }
 
-
 exports.deletePatientByIDService = async (id) => {
     const deletedNotes = await Notes.deleteMany({ noteFor: id })
     const patient = await Patient.findOne({ userId: id })

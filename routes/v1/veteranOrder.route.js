@@ -15,6 +15,10 @@ router.route('/byStatus')
 router.route('/archive-orders/:id')
     .get(veteranOrderController.getArchiveVeteranOrder)
 
+
+router.route("/publish-notes/:id")
+    .post(veteranOrderController.publishNotesByOrderId)
+
 router.route('/veteran-order-note/:id')
     .get(veteranOrderController.getNotesByVeteranOrderId)
     .post(veteranOrderController.insertNotesByVeteranOrderId)

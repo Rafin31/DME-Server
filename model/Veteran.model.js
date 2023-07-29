@@ -17,22 +17,18 @@ const veteranSchema = mongoose.Schema({
     zip: {
         type: String,
         trim: true,
-        required: [true, "Zip is required"]
     },
     city: {
         type: String,
         trim: true,
-        required: [true, "City is required"]
     },
     state: {
         type: String,
         trim: true,
-        required: [true, "State is required"]
     },
     address: {
         type: String,
         trim: true,
-        required: [true, "Address is required"]
     },
     lastFour: {
         type: String,
@@ -47,7 +43,12 @@ const veteranSchema = mongoose.Schema({
         type: [ObjectId],
         ref: "User",
         required: [true, "Assigned VA is required"]
-    }
+    },
+    dmeSupplier: {
+        type: ObjectId,
+        ref: "User",
+        required: [true, "DME Supplier required"]
+    },
 },
     { timestamps: true }
 )
