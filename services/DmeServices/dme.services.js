@@ -30,7 +30,6 @@ exports.getActiveDMEService = async () => {
     for (const ad of activeDME) {
         const dme = await DME_Supplier.find({ userId: ad._id }).select("companyName")
         ad.companyName = dme[0].companyName
-        console.log(ad)
     }
 
     return activeDME
@@ -146,6 +145,14 @@ exports.deleteDocumentsService = async (doc, orderCategory, docId, body) => {
 
         return { docDelete, patient }
     }
+    if (doc === "veteran-document") {
+        const { patientId } = body
+
+        const docDelete = await Document.deleteOne({ _id: docId })
+        const veteran = await Veteran.updateOne({ userId: patientId }, { $pull: { document: docId } })
+
+        return { docDelete, veteran }
+    }
 }
 
 
@@ -223,6 +230,10 @@ exports.uploadDocumentsService = async (fileName, path, patientId, uploaderId, t
 
         if (path.includes("patient-documents")) {
             await Patient.updateOne({ userId: patientId }, { $push: { document: document[0]._id } }).session(session)
+        }
+
+        if (path.includes("veteran-documents")) {
+            await Veteran.updateOne({ userId: patientId }, { $push: { document: document[0]._id } }).session(session)
         }
 
         if (path.includes("order-documents") && orderCategory === "equipment-order") {

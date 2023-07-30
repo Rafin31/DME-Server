@@ -405,6 +405,9 @@ exports.findUserByIdService = async (id) => {
     if (user.userCategory.category === "Veteran") {
         const details = await Veteran
             .findOne({ userId: user._id })
+            .populate({ path: "document", select: ' -updatedAt -__v' })
+            .populate({ path: "assignedVaProsthetic", select: ' _id fullName email' })
+            .populate({ path: "dmeSupplier", select: ' _id fullName email' })
             .select('-_id -userId -updatedAt -createdAt -__v')
         user = { ...user, details }
     }

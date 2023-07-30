@@ -245,9 +245,10 @@ exports.uploadDocuments = async (req, res) => {
         const documentFileName = req.file.filename
         const path = req.file.destination
         const { uploaderId, title, description, orderCategory } = req.body
-        const { id: patientId } = req.params
+        const { id: patientId } = req.params //here we are taking veteranId while uploading doc for veterans. patientId is using for all kind of user's ID for uploading their documents
         const fileName = path.split('uploads/')[1] + "/" + documentFileName
         const orderId = req.body.orderId || ""
+
 
         await dmeService.uploadDocumentsService(fileName, path, patientId, uploaderId, title, description, orderCategory, orderId)
 

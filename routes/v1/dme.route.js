@@ -42,6 +42,7 @@ router.post('/remove-therapist-from-patient', dmeController.removeTherapist)
 
 router.post('/upload-order-document', uploadDocument("order-documents").single("order-document"), dmeController.uploadDocuments)
 router.post('/upload-patient-document/:id', uploadDocument("patient-documents").single("patient-document"), dmeController.uploadDocuments)
+router.post('/upload-veteran-document/:id', uploadDocument("veteran-documents").single("veteran-documents"), dmeController.uploadDocuments)
 
 
 router.get('/dashboardStates/:id', dmeController.getDashboardStates)
