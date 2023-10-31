@@ -25,6 +25,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.8.0",
     "nodemon": "^2.0.20",
+    "socket.io": "^4.7.2",
     "tree-cli": "^0.6.7",
     "validator": "^13.7.0",
     "xlsx": "^0.18.5"

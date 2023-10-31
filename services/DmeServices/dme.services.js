@@ -13,6 +13,7 @@ const RepairOrder = require("../../model/RepairOrder.model")
 const VeteranOrder = require("../../model/VeteranOrder.model")
 const Veteran = require("../../model/Veteran.model")
 const Notes = require("../../model/Notes.model")
+const AssignedTask = require("../../model/AssignedTask.model")
 const Document = require("../../model/Documents.model")
 const { db } = require("../../model/Task.model")
 const { sendMail } = require('../../utils/sentEmail');
@@ -33,6 +34,23 @@ exports.getActiveDMEService = async () => {
     }
 
     return activeDME
+}
+
+exports.getActiveDMEStaffService = async () => {
+    const activeDMEStaff = await User.find({
+        $and: [
+            { userCategory: "638f7714a7f2be8abe01d2d2" }, //dme-staff
+            { status: "63861954b3b3ded1ee267309" }
+        ]
+    }).lean()
+        .select("fullName email")
+
+    for (const ad of activeDMEStaff) {
+        const dme = await Staff.find({ userId: ad._id }).select("companyName")
+        ad.companyName = dme[0].companyName
+    }
+
+    return activeDMEStaff
 }
 
 exports.findDmeByEmail = async (email) => {
@@ -458,4 +476,153 @@ exports.removeTherapistService = async (patientUserId, therapistUserId) => {
         throw new Error(error)
     }
 
+}
+
+
+// assign Task 
+
+exports.getAssignTaskByAssignedUserService = async (assignedToId) => {
+    try {
+        if (assignedToId) {
+            const task = await AssignedTask.find({ assignedTo: assignedToId })
+                .populate({
+                    path: "assignedBy",
+                    select: "_id fullName email"
+                })
+                .populate({
+                    path: "assignedTo",
+                    select: "_id fullName email"
+                })
+                .sort("-createdAt")
+                .select("-__v -updatedAt")
+
+            const statusOrder = {
+                "Pending": 1,
+                "Accepted": 2,
+                "Completed": 3,
+                // Add more statuses if needed
+                "Rejected": 5
+            };
+
+            task.sort((a, b) => {
+                if (a.status === b.status) {
+                    return 0;
+                } else {
+                    const aOrder = statusOrder[a.status] || 4; // Assign 4 if status not found in order
+                    const bOrder = statusOrder[b.status] || 4; // Assign 4 if status not found in order
+                    return aOrder - bOrder;
+                }
+            });
+
+            return task
+        } else {
+            throw new Error("No Assigned User ID")
+        }
+
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+exports.getAssignTaskByAssignedByUserService = async (assignedById) => {
+    try {
+        if (assignedById) {
+            const task = await AssignedTask.find({ assignedBy: assignedById })
+                .populate({
+                    path: "assignedBy",
+                    select: "_id fullName email"
+                })
+                .populate({
+                    path: "assignedTo",
+                    select: "_id fullName email"
+                })
+                .sort("-createdAt")
+                .select("-__v -updatedAt")
+
+            const statusOrder = {
+                "Pending": 1,
+                "Accepted": 2,
+                "Completed": 3,
+                "Rejected": 5
+            };
+
+            task.sort((a, b) => {
+                if (a.status === b.status) {
+                    return 0;
+                } else {
+                    const aOrder = statusOrder[a.status] || 4;
+                    const bOrder = statusOrder[b.status] || 4;
+                    return aOrder - bOrder;
+                }
+            });
+
+            return task
+        } else {
+            throw new Error("No Assigned User ID")
+        }
+
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+exports.getPendingAssignTaskService = async (assignedToId) => {
+    try {
+        if (assignedToId) {
+            const task = await AssignedTask.find({
+                $and: [
+                    { assignedTo: assignedToId },
+                    { status: "Pending" }
+                ]
+            })
+                .populate({
+                    path: "assignedBy",
+                    select: "_id fullName email"
+                })
+                .populate({
+                    path: "assignedTo",
+                    select: "_id fullName email"
+                })
+                .sort("-createdAt")
+                .select("-__v -updatedAt")
+
+
+            return task
+        } else {
+            throw new Error("No Assigned User ID")
+        }
+
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+
+
+exports.assignTaskService = async (data) => {
+    try {
+        if (data) {
+            const assignTaskCreated = await AssignedTask.create(data)
+            return assignTaskCreated
+        } else {
+            throw new Error("No task to assign!")
+        }
+
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+exports.updateAssignTaskService = async (id, data) => {
+    try {
+        if (id && data) {
+            const assignTaskCreated = await AssignedTask.findOneAndUpdate({ _id: id }, data, { new: true })
+            return assignTaskCreated
+        } else {
+            throw new Error("ID or Data is required")
+        }
+
+    } catch (error) {
+        throw new Error(error)
+    }
 }

@@ -4,6 +4,8 @@ const crypto = require('crypto');
 const { generateToken } = require('../../utils/generateInviteToken');
 const multer = require('multer');
 
+const { app } = require("../../app");
+
 
 exports.getActiveDME = async (req, res) => {
     try {
@@ -12,6 +14,24 @@ exports.getActiveDME = async (req, res) => {
         return res.status(200).json({
             status: 'success',
             data: activeDME
+        })
+
+    } catch (error) {
+        return res.status(400).json({
+            status: 'fail',
+            data: error
+        })
+    }
+}
+
+exports.getActiveDMEStaff = async (req, res) => {
+    try {
+
+        const activeDMEStaff = await dmeService.getActiveDMEStaffService()
+
+        return res.status(200).json({
+            status: 'success',
+            data: activeDMEStaff
         })
 
     } catch (error) {
@@ -627,6 +647,96 @@ exports.getBanner = async (req, res) => {
         return res.status(200).json({
             status: "success",
             data: banner
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: "fail",
+            data: error.message
+        })
+    }
+}
+
+//assignTask 
+
+exports.getAssignTaskByAssignedUser = async (req, res) => {
+    try {
+        const { id: assignedToId } = req.params
+        const assignedTask = await dmeService.getAssignTaskByAssignedUserService(assignedToId)
+
+        return res.status(200).json({
+            status: "success",
+            data: assignedTask
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: "fail",
+            data: error.message
+        })
+    }
+}
+
+exports.getAssignTaskByAssignedByUser = async (req, res) => {
+    try {
+        const { id: assignedById } = req.params
+        const assignedTask = await dmeService.getAssignTaskByAssignedByUserService(assignedById)
+
+        return res.status(200).json({
+            status: "success",
+            data: assignedTask
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: "fail",
+            data: error.message
+        })
+    }
+}
+
+exports.getPendingAssignTask = async (req, res) => {
+    try {
+        const { id: assignedToId } = req.params
+        const PendingAssignedTask = await dmeService.getPendingAssignTaskService(assignedToId)
+
+        return res.status(200).json({
+            status: "success",
+            data: PendingAssignedTask
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: "fail",
+            data: error.message
+        })
+    }
+}
+
+
+
+
+exports.assignTask = async (req, res) => {
+    try {
+
+        const assignedTask = await dmeService.assignTaskService(req.body)
+
+        return res.status(200).json({
+            status: "success",
+            data: assignedTask
+        })
+    } catch (error) {
+        return res.status(400).json({
+            status: "fail",
+            data: error.message
+        })
+    }
+}
+
+exports.updateAssignTask = async (req, res) => {
+    try {
+        const { id } = req.params
+        const assignedTask = await dmeService.updateAssignTaskService(id, req.body)
+
+        return res.status(200).json({
+            status: "success",
+            data: assignedTask
         })
     } catch (error) {
         return res.status(400).json({

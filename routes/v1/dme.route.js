@@ -10,6 +10,9 @@ const uploadDocument = require('../../middlewares/importDocument')
 router.route('/active-dme')
     .get(dmeController.getActiveDME)
 
+router.route('/active-dme-staff')
+    .get(dmeController.getActiveDMEStaff)
+
 router.route('/task')
     .post(dmeController.addTask)
     .get(dmeController.getTask)
@@ -64,6 +67,24 @@ router.route('/task/:id')
 router.route('/notes/:id')
     .patch(dmeController.updateNotes)
     .delete(dmeController.deleteNotes)
+
+//assigned task to dme
+
+router.route('/assign-task')
+
+    .post(dmeController.assignTask)
+
+router.route('/assign-task/assignedTo/:id')
+    .get(dmeController.getAssignTaskByAssignedUser)
+    .patch(dmeController.updateAssignTask)
+
+
+router.route('/assign-task/assignedBy/:id')
+    .get(dmeController.getAssignTaskByAssignedByUser)
+
+
+router.route('/assign-task/assignedTo/pending/:id')
+    .get(dmeController.getPendingAssignTask)
 
 
 module.exports = router

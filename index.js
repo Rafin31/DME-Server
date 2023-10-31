@@ -1,4 +1,5 @@
-const app = require("./app");
+const { app } = require("./app");
+const { io } = require("./app");
 const errorHandler = require("./middlewares/errorHandler");
 const multer = require("multer");
 const port = process.env.PORT || 5000;
@@ -17,6 +18,9 @@ const veteranRouter = require('./routes/v1/veteran.route');
 const privateMessageRouter = require('./routes/v1/privateMessage.route');
 
 
+
+
+
 //routes
 app.use('/api/v1/users', userRoutes) //  user route 
 app.use('/api/v1/dme', dmeRoutes) //  dme route 
@@ -31,7 +35,6 @@ app.use('/api/v1/dme-staff', dmeStaffRouter) //  staff route
 app.use('/api/v1/va-staff', vaStaffRouter) //  va-staff route 
 app.use('/api/v1/veteran', veteranRouter) //  veteran route 
 app.use('/api/v1/private-message', privateMessageRouter) //  private-message route 
-
 
 app.all("*", (req, res) => {
     res.status(404).send({ success: "false", message: "No API end point found" });
